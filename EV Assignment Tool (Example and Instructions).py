@@ -21,11 +21,11 @@ used to evaluate current or designed EV charging station configurations.
 
 The EV assignment is formulated as a capacitated user equilibrium (UE) problem, originally
 introduced in Beckman et al. (1956), to capture users’ charging station choice. At UE, charging
-stations used by the EVs from the same origin should have the smallest and the same access cost
-(travel cost + waiting cost). The capacity if charging station is reflected in the M/D/C queueing
-model, which assumes users arrive sufficiently randomly while charging time is deterministic
-(e.g. an empty tank will take half hour to fully recharge in a DCFC). Because there is no closed
-form expression for an M/D/C model, we make use of an approximation from Barceló et al. (1996).
+stations used by the EVs from the same origin should have the smallest and the same access + charging
+time cost (travel time + queue delay + charging time). The capacity if charging station is reflected
+in the M/D/C queueing model, which assumes users arrive sufficiently randomly while charging time is
+deterministic (e.g. an empty tank will take half hour to fully recharge in a DCFC). Because there is 
+no closed form expression for an M/D/C model, we make use of an approximation from Barceló et al.(1996).
 The model is solved using a Method of Successive Averages which guarantees convergence for convex
 problems like this one (Powell and Sheffi, 1982). 
 
