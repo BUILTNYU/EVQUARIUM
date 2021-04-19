@@ -416,7 +416,8 @@ EVLo = pd.read_csv('NYC_total_charging_demand.csv') #Please change the file name
     "miu": service rate (number of EVs charged/unit time) of one charger at this charging station (int64)
     "Number of Chargers" : the number of chargers at this charging station (int64)
     
-    Note: Within each charging station, all the chargers are of the same type (Level 2 or DC Fast).If some charging stations in
+    Note: Within each charging station, all the chargers are of the same type (Level 2 or DC Fast).If some charging stations 
+    have both Level 2 and DC Fast chargers, please seperate each of them as 2 charging stations at the same location.
         
     Please name the columns exactly as required.
 
