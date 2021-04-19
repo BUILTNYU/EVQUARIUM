@@ -12,8 +12,10 @@ Barceló, F., Casares, V., & Paradells, J. (1996). M/D/C queue with priority: Ap
 
 Powell, W. B., & Sheffi, Y. (1982). The convergence of equilibrium algorithms with predetermined step sizes. Transportation Science, 16(1), 45-55.
 
+-------------------------------------------------------
 
 To use this Tool:
+
 Please save the EV location list, charging station list and the travel cost matrix as csv files in the same folder as this script, then fill in the file names in the following cell correspondingly.
 
 1. Prepare EV location csv file
