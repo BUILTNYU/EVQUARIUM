@@ -5,8 +5,11 @@ This script gives an EV-to-charging station assignment tool with M/D/C charging 
 The EV assignment is formulated as a capacitated user equilibrium (UE) problem, originally introduced in Beckman et al. (1956), to capture users’ charging station choice. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access cost (travel cost + waiting cost). The capacity if charging station is reflected in the M/D/C queueing model, which assumes users arrive sufficiently randomly while charging time is deterministic (e.g. an empty tank will take half hour to fully recharge in a DCFC). Because there is no closed form expression for an M/D/C model, we make use of an approximation from Barceló et al. (1996). The model is solved using a Method of Successive Averages which guarantees convergence for convex problems like this one (Powell and Sheffi, 1982). 
 
 References:
+
 Beckmann, M., McGuire, C. B., & Winsten, C. B. (1956). Studies in the Economics of Transportation (No. 226 pp).
+
 Barceló, F., Casares, V., & Paradells, J. (1996). M/D/C queue with priority: Application to trunked mobile radio systems. Electronics Letters, 32(18), 1644-1644.
+
 Powell, W. B., & Sheffi, Y. (1982). The convergence of equilibrium algorithms with predetermined step sizes. Transportation Science, 16(1), 45-55.
 
 
