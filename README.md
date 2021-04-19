@@ -28,7 +28,7 @@ Please save the EV location list, charging station list and the travel cost matr
     
 2. Prepare Charging Station csv file
 
-    Note: Within each charging station, all the chargers are of the same type (Level 2 or DC Fast).
+    Note: Within each charging station, all the chargers are of the same type (Level 2 or DC Fast). If some charging stations have both Level 2 and DC Fast chargers, please seperate each of them as 2 charging stations at the same location.
     
     Columns:
     
