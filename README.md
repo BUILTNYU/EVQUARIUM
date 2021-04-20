@@ -73,10 +73,11 @@ Please save the EV location list, charging station list and the travel cost matr
     Parameter "pri": print error, mean cost and number of steady-state charging stations every  pri number of iterations. If no printing is needed before the final results, set pri as inf (pri = np.inf)
 
 8. Run the algorithm
-
     After the algorithm converges with the convergence criterion that you set, please check if all the charging stations are at steady state. 
+    The 6 output files are saved in a folder named "Results" where this script is saved. 
     
-    The 6 output files are saved in a folder named "Results" where this script is saved. Please make sure that there's no folder named "Results" at the directiry where the script and input files are saved. The output files include:
+!!! Please make sure that there's no folder named "Results" at the directiry where the script and input files are saved. 
+    The output files include:
     
      - Assignment Matrix.csv
      - Access Time Matrix.csv
@@ -96,11 +97,13 @@ Please save the EV location list, charging station list and the travel cost matr
      - System Total Access Time
      - System Total Access Time + Charging Time
      - Average Access Time for one EV
-     - Average Access Time + Charging Time
+     - Average Access Time + Charging Time for one EV
      - Number of steady-state (utilization ratio ≤ 1) charging stations at convergence 
-       (should be equal to the total number of charging stations to get accurate results)
      - Number of iterations until convergence
      - Run time of the algorithm (wall time)
+     
+!!! Please check if the number of steady-state charging stations at convergence equals to the total number of charging stations. If a large number of charging stations are not at steady state, the results are not accurate.
+Run the algorithm below:
 
 
 Our paper on this:
