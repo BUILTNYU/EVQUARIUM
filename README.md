@@ -1,4 +1,4 @@
-# EV_Charging_Station_Access_Equlibrium_Model
+# EV_Charging_Station_Access_Equilibrium_Model
 
 This script gives an EV-to-charging station assignment tool with M/D/C charging station queueing. The tool outputs the assignment matrix, the access cost matrix, as well as the expected wait time and utilization ratio of charging stations, and average access cost of the origins. It could be used to evaluate current or designed EV charging station configurations. 
 
