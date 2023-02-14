@@ -120,8 +120,25 @@ EV parking location table:
 Charging station table:
 <img width="364" alt="Screen Shot 2023-02-14 at 12 51 43 PM" src="https://user-images.githubusercontent.com/75587054/218817893-9d2bc9c0-0f7b-4c30-9729-915b28f5832e.png">
 
+Their locations plotted:
+<img width="522" alt="Screen Shot 2023-02-14 at 12 52 43 PM" src="https://user-images.githubusercontent.com/75587054/218818095-80596015-cb4a-429f-9515-e61b94d106d9.png">
 
+The travel cost matrix is computer using linear distance assuming a speed of 20.
 
+Convergence criterion is set as 10^(-4). Printing setting is to print every 10000 iterarions.
+
+Output:
+<img width="431" alt="Screen Shot 2023-02-14 at 12 55 11 PM" src="https://user-images.githubusercontent.com/75587054/218818600-78f9f86b-d9d3-4b68-ace7-3effaaf7000a.png">
+<img width="486" alt="Screen Shot 2023-02-14 at 12 55 22 PM" src="https://user-images.githubusercontent.com/75587054/218818628-af7e03d0-9bfc-4070-b977-8a2002386975.png">
+
+Computation time is 11.1sec.
+
+Detailed results can be illustrated as follows:
+<img width="286" alt="Screen Shot 2023-02-14 at 12 56 14 PM" src="https://user-images.githubusercontent.com/75587054/218818805-b4b1b6cd-2c14-4a7e-a762-d8276dd7f04c.png">
+<img width="516" alt="Screen Shot 2023-02-14 at 12 56 24 PM" src="https://user-images.githubusercontent.com/75587054/218818837-401e99d2-a03c-496f-a385-fafcb65c814f.png">
+<img width="371" alt="Screen Shot 2023-02-14 at 12 56 32 PM" src="https://user-images.githubusercontent.com/75587054/218818872-05d30af2-9919-4790-b9a9-3d4f7249d807.png">
+<img width="518" alt="Screen Shot 2023-02-14 at 12 56 41 PM" src="https://user-images.githubusercontent.com/75587054/218818913-6e4d27b8-1033-4a95-9d79-e20d1e58f203.png">
+<img width="520" alt="Screen Shot 2023-02-14 at 12 56 54 PM" src="https://user-images.githubusercontent.com/75587054/218818958-4abe3a16-7bc9-45fe-a1a2-65d66fa092cb.png">
 
 
 **Our paper on this:**
