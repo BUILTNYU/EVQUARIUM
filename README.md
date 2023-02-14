@@ -1,6 +1,6 @@
 # EVCEval: An EV charging station access equilibrium model 
 
-### Introduction
+### 1 Introduction
 
 This script gives an EV-to-charging station assignment tool with M/D/C charging station queueing. The tool outputs the assignment matrix, the access cost matrix, as well as the expected wait time and utilization ratio of charging stations, and average access cost of the origins. It could be used to evaluate current or designed EV charging station configurations. 
 
@@ -16,7 +16,7 @@ Powell, W. B., & Sheffi, Y. (1982). The convergence of equilibrium algorithms wi
 
 
 
-### Instructions
+### 2 Instructions
 
 To use this Tool:
 
@@ -111,10 +111,20 @@ Run the algorithm below:
 
 
 
-### Example
+### 3 Example
+We use a small example with 5 EV parking locations (demand nodes) and 3 charging stations to illustrate how the example works.
+
+EV parking location table:
+<img width="264" alt="Screen Shot 2023-02-14 at 12 51 33 PM" src="https://user-images.githubusercontent.com/75587054/218817859-09c0a6e5-8cd3-4b1b-ace3-004c9e699869.png">
+
+Charging station table:
+<img width="364" alt="Screen Shot 2023-02-14 at 12 51 43 PM" src="https://user-images.githubusercontent.com/75587054/218817893-9d2bc9c0-0f7b-4c30-9729-915b28f5832e.png">
 
 
-Our paper on this:
+
+
+
+**Our paper on this:**
 https://www.researchgate.net/publication/349234204_An_electric_vehicle_charging_station_access_equilibrium_model_with_MDC_queueing
 
 
