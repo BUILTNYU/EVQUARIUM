@@ -1,4 +1,4 @@
-# EVCEval: An EV charging station access equilibrium model 
+# EVCHUARIUM: An EV charging station access equilibrium model 
 
 ### 1 Introduction
 
