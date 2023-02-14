@@ -131,11 +131,17 @@ Output:
 <img width="431" alt="Screen Shot 2023-02-14 at 12 55 11 PM" src="https://user-images.githubusercontent.com/75587054/218818600-78f9f86b-d9d3-4b68-ace7-3effaaf7000a.png">
 <img width="486" alt="Screen Shot 2023-02-14 at 12 55 22 PM" src="https://user-images.githubusercontent.com/75587054/218818628-af7e03d0-9bfc-4070-b977-8a2002386975.png">
 
-Computation time is 11.1sec.
+The output includes error, mean cost of accessing and charging, and number of charging stations at steady state every 10000 iterations. Final assignment matrix and travel+queueing+charging table are printed afterwards.
 
-Detailed results can be illustrated as follows:
+Convergence is reached after 36869 iterations. Computation time is 11.1 sec.
+
+From the results, we can see Wardrop's principles. For a parking location, the chosen charging stations have the smallest and the same cost of travel+queueing+charging.
+
+Detailed results can be illustrated as follows. For parking locations, average cost of accessing assigned charging stations is computed. 
 <img width="286" alt="Screen Shot 2023-02-14 at 12 56 14 PM" src="https://user-images.githubusercontent.com/75587054/218818805-b4b1b6cd-2c14-4a7e-a762-d8276dd7f04c.png">
 <img width="516" alt="Screen Shot 2023-02-14 at 12 56 24 PM" src="https://user-images.githubusercontent.com/75587054/218818837-401e99d2-a03c-496f-a385-fafcb65c814f.png">
+
+For charging stations, utilization ratio and average queueing+charging time is computed.
 <img width="371" alt="Screen Shot 2023-02-14 at 12 56 32 PM" src="https://user-images.githubusercontent.com/75587054/218818872-05d30af2-9919-4790-b9a9-3d4f7249d807.png">
 <img width="518" alt="Screen Shot 2023-02-14 at 12 56 41 PM" src="https://user-images.githubusercontent.com/75587054/218818913-6e4d27b8-1033-4a95-9d79-e20d1e58f203.png">
 <img width="520" alt="Screen Shot 2023-02-14 at 12 56 54 PM" src="https://user-images.githubusercontent.com/75587054/218818958-4abe3a16-7bc9-45fe-a1a2-65d66fa092cb.png">
