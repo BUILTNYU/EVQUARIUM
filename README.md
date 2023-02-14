@@ -149,7 +149,7 @@ Detailed results can be illustrated as follows. For parking locations, average c
 For charging stations, utilization ratio and average queueing+charging time is computed.
 
 <img width="371" alt="Screen Shot 2023-02-14 at 12 56 32 PM" src="https://user-images.githubusercontent.com/75587054/218818872-05d30af2-9919-4790-b9a9-3d4f7249d807.png">
-<img width="518" alt="Screen Shot 2023-02-14 at 12 56 41 PM" src="https://user-images.githubusercontent.com/75587054/218818913-6e4d27b8-1033-4a95-9d79-e20d1e58f203.png">
+<img width="519" alt="Screen Shot 2023-02-14 at 1 58 38 PM" src="https://user-images.githubusercontent.com/75587054/218831695-baede02b-4140-47e2-ad63-240293bc7d6e.png">
 <img width="520" alt="Screen Shot 2023-02-14 at 12 56 54 PM" src="https://user-images.githubusercontent.com/75587054/218818958-4abe3a16-7bc9-45fe-a1a2-65d66fa092cb.png">
 
 
