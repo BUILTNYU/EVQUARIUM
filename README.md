@@ -2,7 +2,7 @@
 
 ### 1 Introduction
 
-This script gives EVQUARIUM, an EV-to-charging station assignment tool with M/D/C charging station queueing. The tool evaluates EV charging infrastructure in a region given the EV charging demand within that region. The tool outputs the expected wait time (queueing+charging) and utilization ratio of each charging station, and average access time (traveling+queueing) of each EV parking location. It could be used to evaluate current or designed EV charging station configurations. 
+This script gives EVQUARIUM, an EV charging infrastructure evaluation tool with M/D/C charging station queueing. The tool evaluates EV charging infrastructure in a region given the EV charging demand within that region. The tool outputs the expected wait time (queueing+charging) and utilization ratio of each charging station, and average access time (traveling+queueing) of each EV parking location. It could be used to evaluate current or designed EV charging station configurations. 
 
 EVQUARIUM do the evaluation by obtaining the assignment matrix at user equilibrium (UE), which describes which charging stations the EVs at each EV parking location choose to go to. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access time (traveling+queueing). Potantial queueing at charging stations is considered through a M/D/C queueing model. 
 
@@ -148,20 +148,12 @@ For charging stations, utilization ratio and average queueing+charging time is c
 <img width="520" alt="Screen Shot 2023-02-14 at 12 56 54 PM" src="https://user-images.githubusercontent.com/75587054/218818958-4abe3a16-7bc9-45fe-a1a2-65d66fa092cb.png">
 
 
-**Our paper on this:**
-https://www.researchgate.net/publication/349234204_An_electric_vehicle_charging_station_access_equilibrium_model_with_MDC_queueing
 
 
-Thank you!
+If you have any questions, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU)
+
 
 --
 Bingqing (Chloe) Liu
 
-Ph.D Candidate in Transportation Planning and Engineering   
-
-C2SMART
-
-New York University Tandon School of Engineering
-
-bl2453@nyu.edu
 
