@@ -14,7 +14,7 @@ https://www.tandfonline.com/doi/full/10.1080/15568318.2022.2029633?casa_token=ni
 ### 2 License
 The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder (Christopher.Snyder@nyulangone.org) for commercial use.
 
-For questions regarding the tool, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU) (bingqing.liu@nyu.edu).
+For questions about the code, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU) (bingqing.liu@nyu.edu).
 
 
 ### 3 Instructions
