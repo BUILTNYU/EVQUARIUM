@@ -1,4 +1,4 @@
-# EVQUARIUM: An EV charging station access equilibrium model 
+# EVQUARIUM: An EV charging infrastructure evaluation tool
 
 ### 1 Introduction
 
