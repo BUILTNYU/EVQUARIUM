@@ -14,6 +14,8 @@ https://www.tandfonline.com/doi/full/10.1080/15568318.2022.2029633?casa_token=ni
 ### 2 License
 The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder (Christopher.Snyder@nyulangone.org) for commercial use.
 
+For questions regarding the tool, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU) (bingqing.liu@nyu.edu).
+
 
 ### 3 Instructions
 
@@ -175,8 +177,6 @@ EVQUARIUM could also be a useful tool for public agencies, such as city or state
 4. Climate and energy planning: EVQUARIUM can help public agencies plan for the impacts of increased EV adoption on climate and energy systems. By understanding the expected demand for EV charging infrastructure, public agencies can plan for the infrastructure and energy needs that will arise as more EVs come online, and develop policies and programs to promote the use of clean energy sources for EV charging.
 
 Overall, EVQUARIUM can provide public agencies with data and insights to inform policy and infrastructure planning related to EV adoption and infrastructure investment, as well as support efforts to reduce greenhouse gas emissions and promote the use of clean energy sources.
-
-If you have any questions, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU)
 
 Thank you!
 
