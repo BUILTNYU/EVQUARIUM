@@ -12,7 +12,7 @@ Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle c
 https://www.researchgate.net/publication/349234204_An_electric_vehicle_charging_station_access_equilibrium_model_with_MDC_queueing
 
 ### 2 License
-The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM. Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder(Christopher.Snyder@nyulangone.org) for commercial use.
+The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder (Christopher.Snyder@nyulangone.org) for commercial use.
 
 
 ### 3 Instructions
