@@ -11,8 +11,11 @@ For more details, please refer to the following paper:
 Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle charging station access equilibrium model with M/D/C queueing. International Journal of Sustainable Transportation, 1-17.
 https://www.researchgate.net/publication/349234204_An_electric_vehicle_charging_station_access_equilibrium_model_with_MDC_queueing
 
+### 2 License
+The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM. Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder(Christopher.Snyder@nyulangone.org) for commercial use.
 
-### 2 Instructions
+
+### 3 Instructions
 
 To use this Tool:
 
@@ -107,7 +110,7 @@ Run the algorithm below:
 
 
 
-### 3 Example
+### 4 Example
 We use a small example with 5 EV parking locations (demand nodes) and 3 charging stations to illustrate how the example works.
 
 EV parking location table:
@@ -149,7 +152,7 @@ For charging stations, utilization ratio and average queueing+charging time is c
 <img width="520" alt="Screen Shot 2023-02-14 at 12 56 54 PM" src="https://user-images.githubusercontent.com/75587054/218818958-4abe3a16-7bc9-45fe-a1a2-65d66fa092cb.png">
 
 
-### 4 Application
+### 5 Application
 
 EVQUARIUM could be a useful tool for private sector that deal with EVs, such as charging infrastructure companies and EV mobility providers, in several ways:
 
