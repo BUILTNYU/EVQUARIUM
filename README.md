@@ -2,11 +2,12 @@
 
 ### 1 Introduction
 
-This script gives an EV-to-charging station assignment tool with M/D/C charging station queueing. The tool outputs the assignment matrix, the access cost matrix, as well as the expected wait time and utilization ratio of charging stations, and average access cost of the origins. It could be used to evaluate current or designed EV charging station configurations. 
+This script gives EVQUARIUM, an EV-to-charging station assignment tool with M/D/C charging station queueing. The tool evaluates EV charging infrastructure in a region given the EV charging demand within that region. The tool outputs the expected wait time (queueing+charging) and utilization ratio of each charging station, and average access time (traveling+queueing) of each EV parking location. It could be used to evaluate current or designed EV charging station configurations. 
 
-The EV assignment is formulated as a capacitated user equilibrium (UE) problem, originally introduced in Beckman et al. (1956), to capture users’ charging station choice. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access cost (travel cost + waiting cost). The capacity if charging station is reflected in the M/D/C queueing model, which assumes users arrive sufficiently randomly while charging time is deterministic (e.g. an empty tank will take half hour to fully recharge in a DCFC). Because there is no closed form expression for an M/D/C model, we make use of an approximation from Barceló et al. (1996). The model is solved using a Method of Successive Averages which guarantees convergence for convex problems like this one (Powell and Sheffi, 1982). 
+EVQUARIUM do the evaluation by obtaining the assignment matrix at user equilibrium (UE), which describes which charging stations the EVs at each EV parking location choose to go to. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access time (traveling+queueing). Potantial queueing at charging stations is considered through a M/D/C queueing model. 
 
-Reference: Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle charging station access equilibrium model with M/D/C queueing. International Journal of Sustainable Transportation, 1-17.
+For more details, please refer to the following paper:
+Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle charging station access equilibrium model with M/D/C queueing. International Journal of Sustainable Transportation, 1-17.
 https://www.researchgate.net/publication/349234204_An_electric_vehicle_charging_station_access_equilibrium_model_with_MDC_queueing
 
 
