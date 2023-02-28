@@ -7,6 +7,7 @@ EVQUARIUM is an evaluation tool that quantifies the accessibility of EV charging
 EVQUARIUM do the evaluation by obtaining the assignment matrix at user equilibrium (UE), which describes which charging stations the EVs at each EV parking location choose to go to. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access time (traveling+queueing). Potantial queueing at charging stations is considered through a M/D/C queueing model. 
 
 INPUT DATA: zone IDs, charging station IDs (a station with mixed charger types is represented by multiple chargers with same location), number of EV charging visits per unit time per zone, charging time per vehicle from empty to max, travel time between each zone
+
 OUTPUT DATA: queue delay and utilization ratio at each charging station under equilibrium, allocation of EV charging visits from each zone to each charging station under equilibrium
 
 For more details, please refer to the following paper:
