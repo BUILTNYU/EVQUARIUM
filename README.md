@@ -12,7 +12,7 @@ OUTPUT DATA: queue delay and utilization ratio at each charging station under eq
 For more details, please refer to the following paper:
 
 Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle charging station access equilibrium model with M/D/C queueing. International Journal of Sustainable Transportation, 1-17.
-https://www.tandfonline.com/doi/full/10.1080/15568318.2022.2029633?casa_token=nifG6rFSWJkAAAAA%3AhUGkUbnVrHglR6tK7j4RrsitSpFIU0yPHM3aKQLEEVe78_GbXLFeHZ6ZBZ0x7cFp0Q0qd541fuYDWQ
+https://www.tandfonline.com/doi/full/10.1080/15568318.2022.2029633
 
 ### 2 License
 The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder (Christopher.Snyder@nyulangone.org) for commercial use.
