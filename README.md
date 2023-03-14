@@ -4,7 +4,7 @@
 
 EVQUARIUM is an evaluation tool that quantifies the accessibility of EV charging station locations using queueing and graph theory. Given a zonal distribution of EVs with access times to charging stations, it outputs the access patterns and social impacts under equilibrium as expected wait time (queueing+charging) and utilization ratio of each charging station, and average access time (traveling+queueing) of each EV parking location. It could be used to evaluate current or designed EV charging station configurations. 
 
-EVQUARIUM do the evaluation by obtaining the assignment matrix at user equilibrium (UE), which describes which charging stations the EVs at each EV parking location choose to go to. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access time (traveling+queueing). Potantial queueing at charging stations is considered through a M/D/C queueing model. 
+EVQUARIUM does the evaluation by obtaining the assignment matrix at user equilibrium (UE), which describes which charging stations the EVs at each zone choose to go to. At UE, charging stations used by the EVs from the same origin should have the smallest and the same access time (traveling+queueing). Potantial queueing at charging stations is considered through a M/D/C queueing model. 
 
 INPUT DATA: zone IDs, charging station IDs (a station with mixed charger types is represented by multiple chargers with same location), number of EV charging visits per unit time per zone, charging time per vehicle from empty to max, travel time between each zone
 
@@ -16,7 +16,7 @@ Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle c
 https://www.tandfonline.com/doi/full/10.1080/15568318.2022.2029633
 
 ### 2 License
-The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) or Christopher Snyder (Christopher.Snyder@nyulangone.org) for commercial use.
+The NYU NON-COMMERCIAL RESEARCH LICENSE is applied to EVQUARIUM (attached in the repository). Please contact [Joseph Chow](https://github.com/jc7373) (joseph.chow@nyu.edu) for commercial use.
 
 For questions about the code, please contact: [Bingqing (Chloe) Liu](https://github.com/BingqingChloeLiuNYU) (bingqing.liu@nyu.edu).
 
@@ -160,25 +160,19 @@ For charging stations, utilization ratio and average queueing+charging time is c
 
 ### 5 Application
 
-EVQUARIUM could be a useful tool for private sector that deal with EVs, such as charging infrastructure companies and EV mobility providers, in several ways:
+EVQUARIUM could be a useful tool for decision-makers that deal with EVs, such as charging infrastructure companies and EV mobility providers, in several ways:
 
-1. Planning: EVQUARIUM can help these companies plan their charging station locations and configurations by evaluating the expected demand for EV charging infrastructure in a given region. This information could be used to strategically locate charging stations in high-demand areas, and optimize the configuration of charging stations to minimize wait times and maximize utilization.
+1. Planning: EVQUARIUM can help these companies plan their charging station locations and configurations by evaluating the expected demand for EV charging infrastructure in a given region. This information could be used to strategically locate charging stations in high-demand areas to minimize wait times and maximize utilization.
 
-2. Performance evaluation: EVQUARIUM can be used to evaluate the performance of existing EV charging infrastructure in a region. By analyzing the expected wait time, utilization ratio, and average access time of charging stations and EV parking locations, companies can identify areas for improvement, such as the addition of more charging stations or optimizing the queueing model to reduce wait times.
+2. Performance evaluation: EVQUARIUM can be used to evaluate the performance of existing EV charging infrastructure in a region. By analyzing the expected wait time, utilization ratio, and average access time of charging stations and EV parking locations, companies can identify areas for improvement, such as the addition of more charging stations, or changing the mix of charger types, to reduce wait times.
 
 3. Investment decisions: EVQUARIUM can provide companies with data and insights to inform investment decisions related to EV charging infrastructure. By evaluating the demand for EV charging infrastructure in a region, companies can make more informed decisions about where to invest their resources, and what types of infrastructure to prioritize.
 
-Overall, EVQUARIUM can help EV-related private sectors to optimize their charging infrastructure, improve the user experience for EV drivers, and make more informed decisions about where and how to invest their resources.
+EVQUARIUM can also be a useful tool for public agencies, such as city or state Departments of Transportation (DOT), in several ways:
 
-EVQUARIUM could also be a useful tool for public agencies, such as city or state Departments of Transportation (DOT), in several ways:
+1. Policy planning: EVQUARIUM can provide public agencies with data on the demand for EV charging infrastructure in a given region, which could inform policy decisions related to EV adoption and infrastructure investment. By understanding the expected demand for EV charging infrastructure, public agencies can make more informed decisions about where to prioritize infrastructure investments and what types of policies to implement to encourage EV adoption or understand the impact of a configuration on different population segments.
 
-1. Policy planning: EVQUARIUM can provide public agencies with data on the demand for EV charging infrastructure in a given region, which could inform policy decisions related to EV adoption and infrastructure investment. By understanding the expected demand for EV charging infrastructure, public agencies can make more informed decisions about where to prioritize infrastructure investments and what types of policies to implement to encourage EV adoption.
-
-2. Infrastructure planning: EVQUARIUM can help public agencies plan the location and configuration of EV charging infrastructure. By analyzing the expected demand for EV charging infrastructure, the tool can help public agencies strategically locate charging stations in high-demand areas and optimize the configuration of charging stations to minimize wait times and maximize utilization.
-
-3. Performance evaluation: EVQUARIUM can be used to evaluate the performance of existing EV charging infrastructure in a region. By analyzing the expected wait time, utilization ratio, and average access time of charging stations and EV parking locations, public agencies can identify areas for improvement, such as the addition of more charging stations or optimizing the queueing model to reduce wait times.
-
-4. Climate and energy planning: EVQUARIUM can help public agencies plan for the impacts of increased EV adoption on climate and energy systems. By understanding the expected demand for EV charging infrastructure, public agencies can plan for the infrastructure and energy needs that will arise as more EVs come online, and develop policies and programs to promote the use of clean energy sources for EV charging.
+2. Climate and energy planning: EVQUARIUM can help public agencies plan for the impacts of increased EV adoption on climate and energy systems. By understanding the expected demand for EV charging infrastructure, public agencies can plan for the infrastructure and energy needs that will arise as more EVs come online, and develop policies and programs to promote the use of clean energy sources for EV charging.
 
 Overall, EVQUARIUM can provide public agencies with data and insights to inform policy and infrastructure planning related to EV adoption and infrastructure investment, as well as support efforts to reduce greenhouse gas emissions and promote the use of clean energy sources.
 
