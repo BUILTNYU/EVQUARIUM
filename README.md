@@ -51,7 +51,7 @@ Note that in the small example we give in the script, there are extra columns st
     
         "ID" : 1,2,3,4,... (int64)
         
-        "miu": service rate (number of EVs charged/unit time) of one charger at this charging
+        "mu": service rate (number of EVs charged/unit time) of one charger at this charging
         station (int64)
         
         "Number of Chargers" : the number of chargers at this charging station (int64)
