@@ -58,22 +58,16 @@ Note that in the small example we give in the script, there are extra columns st
         
 Note that in the small example we give in the script, there are extra columns storing the coordinates of the charging stations. These are not necessary for code running. 
 
-3. Prepare OD cost Matrix csv file
+3. Prepare travel cost matrix csv file
 
-    This matrix should be the travel distance matrix. 
+    This matrix should be the travel time cost matrix. 
     
     Note:
     
         1) The sequence of the rows should correspond to the sequence of the EV Locations in the EV location csv file, and the sequence of the columns should correspond to the sequence of the charging station csv file (float64)
         2) No heading and index in the csv file
-
-4. Set Average Travel Speed
-
-    Parameter "v": average travel speed of the EV's.
     
-    Note: Unit of the speed should be: unit of distance for OD cost/unit of time for service rate and number of EVs to be charged  
-    
-5. Set Weights for Access Time and Charging Time
+4. Set Weights for Access Time and Charging Time
 
     Parameter "access_time_weight":  weight of access time. Recommended value is 6.198.
     
@@ -83,15 +77,15 @@ Note that in the small example we give in the script, there are extra columns st
     
     Reference: Ge, Y. (2019). Discrete Choice Modeling of Plug-in Electric Vehicle Use and Charging Behavior Using Stated Preference Data (Doctoral dissertation).
 
-6. Set Convergence Criteria
+5. Set Convergence Criteria
 
     Parameter "e":  If the Euclidean norm of the difference between the assignment matrix of this iteration and the last iteration is less than e, the algorithm stops and outputs the results.  
 
-7. Set Printing
+6. Set Printing
 
     Parameter "pri": print error, mean cost and number of steady-state charging stations every  pri number of iterations. If no printing is needed before the final results, set pri as inf (pri = np.inf)
 
-8. Run the algorithm
+7. Run the algorithm
     After the algorithm converges with the convergence criterion that you set, please check if all the charging stations are at steady state. 
     The 6 output files are saved in a folder named "Results" where this script is saved. 
     
