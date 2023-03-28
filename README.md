@@ -13,7 +13,7 @@ OUTPUT DATA: queue delay and utilization ratio at each charging station under eq
 The files include:
 - "EV Assignment Tool (Example and Instructions) - 20230328.ipynb": the tool and tutorial
 - "Example input files": input files for the example in the tutorial
-- "M-D-C approximation": simulation results to show the accuracy of M-D-C approximation we adopt
+- "M-D-C approximation": simulation to show the accuracy of the M-D-C approximation we adopt
 - "NYU Open Source license.pdf": license file
 
 For more details, please refer to the following paper:
