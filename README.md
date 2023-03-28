@@ -129,7 +129,7 @@ EV parking location table:
 
 Charging station table:
 
-<img width="364" alt="Screen Shot 2023-02-14 at 12 51 43 PM" src="https://user-images.githubusercontent.com/75587054/218817893-9d2bc9c0-0f7b-4c30-9729-915b28f5832e.png">
+<img width="397" alt="Screen Shot 2023-03-28 at 9 45 02 AM" src="https://user-images.githubusercontent.com/75587054/228258007-013c3b63-df32-435a-9d23-0b89bda60ec2.png">
 
 Their locations plotted:
 
