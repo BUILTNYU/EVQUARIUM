@@ -10,6 +10,12 @@ INPUT DATA: zone IDs, charging station IDs (a station with mixed charger types i
 
 OUTPUT DATA: queue delay and utilization ratio at each charging station under equilibrium, allocation of EV charging visits from each zone to each charging station under equilibrium
 
+The files include:
+- "EV Assignment Tool (Example and Instructions) - 20230328.ipynb": the tool and tutorial
+- "Example input files": input files for the example in the tutorial
+- "M-D-C approximation": simulation results to show the accuracy of M-D-C approximation we adopt
+- "NYU Open Source license.pdf": license file
+
 For more details, please refer to the following paper:
 
 Liu, B., Pantelidis, T. P., Tam, S., & Chow, J. Y. (2022). An electric vehicle charging station access equilibrium model with M/D/C queueing. International Journal of Sustainable Transportation, 1-17.
@@ -35,6 +41,8 @@ Please save the EV location list, charging station list and the travel cost matr
     
         "Number of EVs" : the number of EVs to be charged per unit time at that location (int64)
     
+Note that in the small example we give in the script, there are extra columns storing the coordinates of the EV locations. These are not necessary for code running. 
+
 2. Prepare Charging Station csv file
 
     Note: Within each charging station, all the chargers are of the same type (Level 2 or DC Fast). If some charging stations have both Level 2 and DC Fast chargers, please seperate each of them as 2 charging stations at the same location.
@@ -48,6 +56,8 @@ Please save the EV location list, charging station list and the travel cost matr
         
         "Number of Chargers" : the number of chargers at this charging station (int64)
         
+Note that in the small example we give in the script, there are extra columns storing the coordinates of the charging stations. These are not necessary for code running. 
+
 3. Prepare OD cost Matrix csv file
 
     This matrix should be the travel distance matrix. 
