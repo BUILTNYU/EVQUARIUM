@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVQUARIUM — Live OSM Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root {
+  --bg: #070b12;
+  --surface: #0c1220;
+  --surface2: #111827;
+  --border: #1a2640;
+  --teal: #00ddb4;
+  --teal-dim: rgba(0,221,180,0.1);
+  --amber: #ffb347;
+  --amber-dim: rgba(255,179,71,0.1);
+  --red: #ff5577;
+  --red-dim: rgba(255,85,119,0.1);
+  --blue: #5ba4ff;
+  --purple: #a78bfa;
+  --text: #c5d5ee;
+  --text-dim: #4e6a8a;
+  --glow: 0 0 30px rgba(0,221,180,0.2);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 54px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  z-index: 1000;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--teal); color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(0,221,180,0.4);
+}
+.logo h1 { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+.logo span { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-dim); letter-spacing: 1.5px; display: block; margin-top: -2px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.badge {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  padding: 3px 10px; border-radius: 100px; letter-spacing: 0.5px;
+  border: 1px solid var(--teal); color: var(--teal);
+}
+/* ── LAYOUT ── */
+.app { display: flex; flex: 1; overflow: hidden; }
+/* ── LEFT PANEL ── */
+.sidebar {
+  width: 360px; flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+.sidebar-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.stab {
+  flex: 1; font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.5px; padding: 10px 0; text-align: center;
+  cursor: pointer; color: var(--text-dim); border: none;
+  background: transparent; border-bottom: 2px solid transparent;
+  transition: all 0.15s; text-transform: uppercase;
+}
+.stab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.stab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+.sidebar-content { flex: 1; overflow-y: auto; padding: 16px; }
+.sidebar-content::-webkit-scrollbar { width: 4px; }
+.sidebar-content::-webkit-scrollbar-track { background: transparent; }
+.sidebar-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* ── MAP AREA ── */
+.map-area { flex: 1; position: relative; }
+#map { width: 100%; height: 100%; background: #0a0f1a; }
+/* Leaflet dark overrides */
+.leaflet-tile { filter: brightness(0.85) saturate(0.7) hue-rotate(185deg); }
+.leaflet-control-zoom a { background: var(--surface2) !important; color: var(--teal) !important; border-color: var(--border) !important; }
+/* ── CARDS ── */
+.card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; margin-bottom: 12px;
+}
+.card-title {
+  font-size: 12px; font-weight: 700; color: #fff;
+  margin-bottom: 3px; display: flex; align-items: center; gap: 6px;
+}
+.card-sub { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-dim); margin-bottom: 12px; }
+/* ── INPUTS ── */
+.field { margin-bottom: 10px; }
+.label { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-family: 'Space Mono', monospace;
+  font-size: 11px; padding: 8px 10px; outline: none; transition: border-color 0.2s;
+}
+textarea { resize: vertical; min-height: 60px; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,221,180,0.08);
+}
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; padding: 9px 16px;
+  border-radius: 7px; border: none; cursor: pointer; transition: all 0.15s;
+}
+.btn-primary { background: var(--teal); color: #000; width: 100%; box-shadow: 0 0 16px rgba(0,221,180,0.2); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,221,180,0.35); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+.btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
+.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.btn-row .btn { flex: 1; }
+/* ── PROGRESS ── */
+.progress-log {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--teal); background: rgba(0,221,180,0.04);
+  border: 1px solid rgba(0,221,180,0.15); border-radius: 7px;
+  padding: 10px; max-height: 120px; overflow-y: auto; line-height: 1.8;
+  margin-bottom: 10px;
+}
+.log-error { color: var(--red); }
+.log-warn { color: var(--amber); }
+/* ── STAT CARDS ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; position: relative;
+}
+.stat::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; border-radius: 8px 8px 0 0;
+}
+.stat.t::before { background: var(--teal); }
+.stat.a::before { background: var(--amber); }
+.stat.r::before { background: var(--red); }
+.stat.b::before { background: var(--blue); }
+.stat .sv { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+.stat .sl { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.5px; }
+/* ── BAR ── */
+.bar-item { margin-bottom: 8px; }
+.bar-hdr { display: flex; justify-content: space-between; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+.bar-hdr b { color: var(--text); }
+.bar-bg { height: 6px; background: var(--bg); border-radius: 100px; overflow: hidden; }
+.bar-fg { height: 100%; border-radius: 100px; transition: width 1.1s cubic-bezier(.2,.8,.3,1); width: 0; }
+/* ── MAP OVERLAYS ── */
+.map-legend {
+  position: absolute; bottom: 24px; right: 12px; z-index: 500;
+  background: rgba(7,11,18,0.92); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: var(--text-dim); }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.legend-sq { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+/* ── UPLOAD DROP ── */
+.drop-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;
+  margin-bottom: 10px;
+}
+.drop-zone:hover, .drop-zone.drag { border-color: var(--teal); background: var(--teal-dim); }
+.drop-zone .icon { font-size: 28px; margin-bottom: 6px; }
+.drop-zone p { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); }
+.drop-zone p b { color: var(--teal); }
+/* ── TOOLTIP ── */
+.info-tip { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-dim); line-height: 1.7; }
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+/* ── RANGE ── */
+input[type="range"] {
+  width: 100%; accent-color: var(--teal); height: 4px;
+  background: var(--bg); border: none; padding: 0;
+}
+/* ── DRAW OVERLAY ── */
+#draw-overlay {
+  position: absolute; inset: 0; z-index: 800;
+  cursor: crosshair;
+  background: rgba(7,11,18,0.55);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.4s;
+  user-select: none;
+}
+#draw-overlay.hidden { opacity: 0; pointer-events: none; }
+.draw-hint {
+  background: rgba(12,18,32,0.95);
+  border: 1px solid var(--teal);
+  border-radius: 14px;
+  padding: 20px 30px;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 0 40px rgba(0,221,180,0.15), 0 8px 32px rgba(0,0,0,0.5);
+}
+.draw-hint .dh-icon { font-size: 36px; margin-bottom: 10px; }
+.draw-hint h2 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.draw-hint p { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); line-height: 1.8; }
+.draw-hint p b { color: var(--teal); }
+#draw-selection {
+  position: absolute;
+  border: 2px solid var(--teal);
+  background: rgba(0,221,180,0.08);
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,221,180,0.2), inset 0 0 30px rgba(0,221,180,0.04);
+  display: none;
+  z-index: 801;
+}
+/* Corner handles on selection */
+#draw-selection::before, #draw-selection::after {
+  content: '';
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: var(--teal);
+  border-style: solid;
+}
+#draw-selection::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+#draw-selection::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+#draw-coords {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(12,18,32,0.95); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px;
+  font-family: 'Space Mono', monospace; font-size: 10px; color: var(--teal);
+  white-space: nowrap; pointer-events: none; z-index: 802;
+  display: none;
+}
+/* Active draw mode cursor on map container */
+.map-area.drawing { cursor: crosshair; }
+.map-area.drawing #map { pointer-events: none; }
+.map-area.drawing #draw-overlay { pointer-events: none; }
+/* Sidebar draw-mode indicator */
+.draw-active-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,221,180,0.1); border: 1px solid var(--teal);
+  border-radius: 8px; padding: 8px 12px; margin-bottom: 10px;
+  font-family: 'Space Mono', monospace; font-size: 10px; color: var(--teal);
+  width: 100%;
+}
+.draw-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; animation: pulseGreen 1.2s ease-in-out infinite; }
+@keyframes pulseGreen { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+/* ── SPINNER ── */
+.spin {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid rgba(0,221,180,0.2); border-top-color: var(--teal);
+  border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ── TRACT TABLE ── */
+.mini-table { width: 100%; border-collapse: collapse; font-family: 'Space Mono', monospace; font-size: 9px; }
+.mini-table th { background: var(--bg); color: var(--teal); padding: 5px 8px; text-align: left; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+.mini-table td { padding: 5px 8px; border-bottom: 1px solid rgba(26,38,64,0.5); color: var(--text-dim); }
+.mini-table tr:hover td { background: var(--bg); color: var(--text); }
+/* ── PULSE NODE ── */
+@keyframes nodePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+/* ── SECTION LABEL ── */
+.sec-label { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+/* ── MAP INFO PANEL ── */
+.map-info {
+  position: absolute; top: 12px; left: 12px; z-index: 500;
+  background: rgba(7,11,18,0.92); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; min-width: 200px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+}
+.map-info .mi-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 3px; color: var(--text-dim); }
+.map-info .mi-row b { color: var(--teal); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">⚡</div>
+    <div>
+      <h1>EVQUARIUM</h1>
+      <span>LIVE OSM · CENSUS · M/D/C EQUILIBRIUM</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge" id="status-badge">READY</div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-tabs">
+      <button class="stab active" onclick="showSTab('load')">Load</button>
+      <button class="stab" onclick="showSTab('config')">Config</button>
+      <button class="stab" onclick="showSTab('results')">Results</button>
+      <button class="stab" onclick="showSTab('data')">Data</button>
+    </div>
+
+    <!-- LOAD TAB -->
+    <div class="sidebar-content" id="stab-load">
+
+      <div class="sec-label">Step 1 — Define Study Area</div>
+
+      <!-- DRAW MODE BUTTON -->
+      <div id="draw-cta" class="card" style="border-color:var(--teal);background:rgba(0,221,180,0.04)">
+        <div class="card-title" style="color:var(--teal)">✏️ Draw on Map</div>
+        <div class="card-sub">Click and drag directly on the map to define your area</div>
+        <button class="btn btn-primary" id="draw-btn" onclick="enterDrawMode()">
+          ✏️ Start Drawing
+        </button>
+        <div id="bbox-readout" style="display:none;margin-top:10px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);line-height:1.9">
+          <div style="color:var(--teal);margin-bottom:4px;letter-spacing:1px">SELECTED BBOX</div>
+          <div id="bbox-readout-text"></div>
+          <button class="btn btn-secondary" style="margin-top:8px;font-size:9px;padding:5px 12px" onclick="enterDrawMode()">↩ Redraw</button>
+        </div>
+      </div>
+
+      <!-- SEARCH FALLBACK -->
+      <details style="margin-bottom:10px">
+        <summary style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px">
+          <span style="color:var(--border);font-size:12px">▸</span> Or search by place name
+        </summary>
+        <div class="card" style="margin-top:8px">
+          <div class="card-sub" style="margin-bottom:8px">Nominatim geocode → auto-set bbox</div>
+          <div class="field">
+            <input type="text" id="place-search" placeholder="e.g. Brooklyn, NY or Newark, NJ" onkeydown="if(event.key==='Enter')geocodePlace()">
+          </div>
+          <button class="btn btn-primary" onclick="geocodePlace()">🔍 Search & Set Bbox</button>
+        </div>
+      </details>
+
+      <!-- OSM FILE FALLBACK -->
+      <details style="margin-bottom:10px">
+        <summary style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px">
+          <span style="color:var(--border);font-size:12px">▸</span> Or upload an .osm file
+        </summary>
+        <div class="card" style="margin-top:8px">
+          <div class="card-sub" style="margin-bottom:8px">Bbox auto-extracted from file</div>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('osm-file').click()"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleOsmDrop(event)">
+            <div class="icon">📂</div>
+            <p><b>Click or drag</b> an .osm file here</p>
+            <p id="osm-file-name" style="margin-top:4px;color:var(--text)"></p>
+          </div>
+          <input type="file" id="osm-file" accept=".osm,.xml" style="display:none" onchange="handleOsmFile(this.files[0])">
+        </div>
+      </details>
+
+      <!-- MANUAL BBOX FALLBACK -->
+      <details style="margin-bottom:10px">
+        <summary style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px">
+          <span style="color:var(--border);font-size:12px">▸</span> Or enter coordinates manually
+        </summary>
+        <div class="card" style="margin-top:8px">
+          <div class="card-sub" style="margin-bottom:8px">South, West, North, East (decimal degrees)</div>
+          <div class="input-row">
+            <div class="field"><div class="label">South</div><input type="number" id="bb-s" placeholder="40.67" step="0.001"></div>
+            <div class="field"><div class="label">West</div><input type="number" id="bb-w" placeholder="-74.02" step="0.001"></div>
+          </div>
+          <div class="input-row">
+            <div class="field"><div class="label">North</div><input type="number" id="bb-n" placeholder="40.73" step="0.001"></div>
+            <div class="field"><div class="label">East</div><input type="number" id="bb-e" placeholder="-73.97" step="0.001"></div>
+          </div>
+          <button class="btn btn-secondary btn-primary" style="margin-top:4px" onclick="applyManualBbox()">Apply Bbox</button>
+        </div>
+      </details>
+
+      <div id="progress-log" class="progress-log" style="display:none"></div>
+
+      <div class="sec-label">Step 2 — Load Data</div>
+
+      <!-- STEP 2A: Generate + paste station data -->
+      <div class="card" style="border-color:var(--teal);background:rgba(0,221,180,0.03);margin-bottom:10px">
+        <div class="card-title" style="color:var(--teal)">⚡ Station Data</div>
+        <div class="card-sub" style="margin-bottom:10px">
+          The sandbox blocks network requests. Draw your bbox, then use the button below to generate a Claude prompt — send it in a <b>new message</b>, then paste the response back here.
+        </div>
+        <div class="field">
+          <div class="label">OCM API Key (optional — improves rate limits)</div>
+          <input type="text" id="ocm-api-key" placeholder="Get free key at openchargemap.org/site/develop" style="font-size:9px" autocomplete="off">
+        </div>
+
+        <button class="btn btn-secondary" onclick="generateDataPrompt()" id="gen-prompt-btn" style="margin-bottom:10px;width:100%">
+          1. Generate Fetch Prompt
+        </button>
+
+        <div id="prompt-display" style="display:none;background:var(--bg);border:1px solid var(--teal);border-radius:6px;padding:10px;margin-bottom:10px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text);line-height:1.6;max-height:120px;overflow-y:auto;word-break:break-word"></div>
+        <button id="copy-prompt-btn" onclick="copyGeneratedPrompt()" style="display:none;width:100%;margin-bottom:10px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;background:var(--teal);color:#000;border:none;border-radius:6px;padding:8px;cursor:pointer;letter-spacing:1px">
+          📋 COPY PROMPT
+        </button>
+
+        <div class="field" style="margin-top:4px">
+          <div class="label">2. Paste Claude's JSON response</div>
+          <textarea id="data-json-paste" placeholder="Paste the full JSON object Claude returns…" style="min-height:90px;font-size:9px;font-family:'Space Mono',monospace"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="loadPastedData()" style="width:100%">
+          3. Load Data + Solve →
+        </button>
+      </div>
+
+      <div class="info-tip" style="font-size:9px">
+        The app is sandboxed with no network access. All external data (charging stations, census tracts, ACS vehicles) is fetched by Claude server-side and passed in via JSON paste.
+      </div>
+
+    </div>
+
+    <!-- CONFIG TAB -->
+    <div class="sidebar-content" id="stab-config" style="display:none">
+
+      <div class="sec-label">EV Demand</div>
+
+      <div class="card">
+        <div class="card-title">🚗 EV Adoption</div>
+        <div class="card-sub">Share of registered vehicles assumed to be EVs</div>
+        <div class="field">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <div class="label">Adoption rate</div>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--teal)" id="ev-rate-val">5%</span>
+          </div>
+          <input type="range" id="ev-rate" min="0.5" max="30" value="5" step="0.5" oninput="document.getElementById('ev-rate-val').textContent=parseFloat(this.value).toFixed(1)+'%';updateDemandPreview()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Visit Frequency</div>
+        <div class="card-sub">How often each EV uses a public charger</div>
+        <div class="field">
+          <div class="label">Visits per EV per week (public charging only)</div>
+          <input type="number" id="visits-per-week" value="1.0" step="0.1" min="0.01" oninput="updateDemandPreview()">
+        </div>
+        <div class="field">
+          <div class="label">Analysis period</div>
+          <select id="time-period" onchange="updateDemandPreview()" style="width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:'Space Mono',monospace;font-size:10px">
+            <option value="daily">Daily (arrivals/day)</option>
+            <option value="peakhour" selected>Peak Hour (arrivals/hr, assume 10% of daily)</option>
+            <option value="weekly">Weekly (arrivals/week)</option>
+          </select>
+        </div>
+        <div id="demand-preview" style="margin-top:8px;padding:8px;background:var(--bg);border-radius:6px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);line-height:1.8"></div>
+      </div>
+
+      <div class="sec-label" style="margin-top:4px">Charging Service Times</div>
+
+      <div class="card">
+        <div class="card-title">⚡ Charger Defaults</div>
+        <div class="card-sub">Service time = mean time EV occupies a port (hours)</div>
+        <div class="input-row">
+          <div class="field">
+            <div class="label">L1 service (hr)</div>
+            <input type="number" id="svc-l1" value="8.0" step="0.5" min="0.1">
+          </div>
+          <div class="field">
+            <div class="label">L2 service (hr)</div>
+            <input type="number" id="svc-l2" value="1.5" step="0.1" min="0.1">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="field">
+            <div class="label">DCFC service (hr)</div>
+            <input type="number" id="svc-dcfc" value="0.5" step="0.1" min="0.05">
+          </div>
+          <div class="field">
+            <div class="label">Fallback (hr)</div>
+            <input type="number" id="default-service" value="1.0" step="0.1" min="0.1">
+          </div>
+        </div>
+        <div class="field" style="margin-top:4px">
+          <div class="label">Default chargers per station (if unknown)</div>
+          <input type="number" id="default-chargers" value="2" step="1" min="1">
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top:4px">Travel &amp; Assignment</div>
+
+      <div class="card">
+        <div class="card-title">🗺 Travel Time</div>
+        <div class="card-sub">Haversine distance ÷ assumed urban speed</div>
+        <div class="field">
+          <div class="label">Urban speed (km/h)</div>
+          <input type="number" id="urban-speed" value="20" step="1" min="5" max="80">
+        </div>
+        <div class="field">
+          <div class="label">Value of Time ($/hr)</div>
+          <input type="number" id="vot" value="20" min="1">
+        </div>
+        <div class="field">
+          <div class="label">Flow line threshold</div>
+          <input type="number" id="flow-thresh" value="0.001" step="0.001" min="0">
+        </div>
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="show-flows" checked style="accent-color:var(--teal);width:auto">
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-dim)">Show flow lines</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ Solver</div>
+        <div class="card-sub">MSA successive averages</div>
+        <div class="input-row">
+          <div class="field"><div class="label">Max iterations</div><input type="number" id="max-iter" value="150" min="10"></div>
+          <div class="field"><div class="label">Convergence ε</div><input type="number" id="epsilon" value="0.001" step="0.0001"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="solve-btn" onclick="solveModel()" disabled>
+        ▶ Run EVQUARIUM Solver
+      </button>
+
+    </div>
+
+    <!-- RESULTS TAB -->
+    <div class="sidebar-content" id="stab-results" style="display:none">
+      <div id="results-empty" class="info-tip" style="text-align:center;padding:20px 0;color:var(--text-dim)">
+        Run the solver to see results here.
+      </div>
+      <div id="results-body" style="display:none">
+
+        <div class="sec-label">Equilibrium Summary</div>
+        <div class="stats-grid">
+          <div class="stat t"><div class="sv" id="r-access">—</div><div class="sl">AVG ACCESS (MIN)</div></div>
+          <div class="stat a"><div class="sv" id="r-delay">—</div><div class="sl">AVG QUEUE (MIN)</div></div>
+          <div class="stat r"><div class="sv" id="r-util">—</div><div class="sl">MAX UTIL %</div></div>
+          <div class="stat b"><div class="sv" id="r-trips">—</div><div class="sl">DAILY EV TRIPS</div></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat t"><div class="sv" id="r-stations">—</div><div class="sl">STATIONS</div></div>
+          <div class="stat b"><div class="sv" id="r-tracts">—</div><div class="sl">TRACTS</div></div>
+          <div class="stat a"><div class="sv" id="r-iters">—</div><div class="sl">ITERATIONS</div></div>
+          <div class="stat r"><div class="sv" id="r-ev-count">—</div><div class="sl">EST. EVs</div></div>
+        </div>
+
+        <hr class="divider">
+        <div class="sec-label">Station Utilization</div>
+        <div id="util-bars"></div>
+
+        <hr class="divider">
+        <div class="sec-label">Station Queue Delay</div>
+        <div id="delay-bars"></div>
+
+        <hr class="divider">
+        <div class="sec-label">Convergence</div>
+        <canvas id="conv-canvas" height="120" style="width:100%;display:block;border-radius:6px;background:var(--bg);border:1px solid var(--border);margin-bottom:12px"></canvas>
+
+      </div>
+    </div>
+
+    <!-- DATA TAB -->
+    <div class="sidebar-content" id="stab-data" style="display:none">
+      <div class="sec-label">Loaded Zones (Census Tracts)</div>
+      <div id="tract-table-wrap" class="info-tip" style="color:var(--text-dim)">No data loaded yet.</div>
+
+      <hr class="divider">
+      <div class="sec-label">Loaded Stations</div>
+      <div id="station-table-wrap" class="info-tip" style="color:var(--text-dim)">No data loaded yet.</div>
+
+      <hr class="divider">
+      <div class="sec-label">Export</div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exportCSV('zones')">Export Zones CSV</button>
+        <button class="btn btn-secondary" onclick="exportCSV('stations')">Export Stations CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-area" id="map-area">
+    <div id="map"></div>
+
+    <!-- Draw overlay — shown on first load -->
+    <div id="draw-overlay">
+      <div class="draw-hint">
+        <div class="dh-icon">✏️</div>
+        <h2>Draw Your Study Area</h2>
+        <p><b>Click and drag</b> on the map to define a bounding box.<br>Release to confirm. You can redraw at any time.</p>
+      </div>
+    </div>
+
+    <!-- Live selection rectangle (DOM, not canvas) -->
+    <div id="draw-selection"></div>
+    <!-- Coordinate readout while dragging -->
+    <div id="draw-coords"></div>
+
+    <!-- Map info overlay -->
+    <div class="map-info" id="map-info" style="display:none">
+      <div class="mi-row"><span>Bbox</span><b id="mi-bbox">—</b></div>
+      <div class="mi-row"><span>Stations</span><b id="mi-stations">—</b></div>
+      <div class="mi-row"><span>Tracts</span><b id="mi-tracts">—</b></div>
+      <div class="mi-row"><span>Est. EVs</span><b id="mi-evs">—</b></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="map-legend">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--teal);letter-spacing:1px;margin-bottom:8px">LEGEND</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>OCM Station (L2)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>OCM Station (DCFC)</div>
+      <div class="legend-item"><div class="legend-sq" style="background:rgba(91,164,255,0.3);border:1px solid var(--blue)"></div>Census Tract</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Tract Centroid (demand)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Overloaded (&gt;80% util)</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// GLOBALS
+// ============================================================
+let map, bboxRect = null;
+let currentBbox = null; // {s,w,n,e}
+let stations = [];
+let tracts = [];
+let lastResults = null;
+let tractLayer = null, stationLayer = null, flowLayer = null, centroidLayer = null;
+
+// ============================================================
+// MAP INIT
+// ============================================================
+function initMap() {
+  map = L.map('map', { zoomControl: true }).setView([40.73, -73.99], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 19
+  }).addTo(map);
+  map.on('moveend', updateMapInfo);
+}
+
+// ============================================================
+// DRAW MODE
+// ============================================================
+let drawState = { active: false, dragging: false, startPx: null, startLatLng: null };
+
+function enterDrawMode() {
+  drawState.active = true;
+  drawState.dragging = false;
+
+  // Show overlay hint, hide any existing bbox
+  const overlay = document.getElementById('draw-overlay');
+  overlay.classList.remove('hidden');
+  overlay.style.pointerEvents = 'none'; // hint is decorative; map-area div handles mouse events
+
+  // Freeze Leaflet interaction during draw
+  map.dragging.disable();
+  map.scrollWheelZoom.disable();
+  map.doubleClickZoom.disable();
+  map.boxZoom.disable();
+
+  const mapArea = document.getElementById('map-area');
+  mapArea.classList.add('drawing');
+  mapArea.style.cursor = 'crosshair';
+
+  document.getElementById('draw-selection').style.display = 'none';
+  document.getElementById('draw-coords').style.display = 'none';
+
+  // Attach draw listeners
+  mapArea.addEventListener('mousedown', onDrawStart);
+  mapArea.addEventListener('touchstart', onDrawStartTouch, {passive: false});
+  setStatus('DRAW MODE', 'var(--amber)');
+}
+
+function exitDrawMode() {
+  drawState.active = false;
+  const mapArea = document.getElementById('map-area');
+  mapArea.classList.remove('drawing');
+  mapArea.style.cursor = '';
+  mapArea.removeEventListener('mousedown', onDrawStart);
+  mapArea.removeEventListener('touchstart', onDrawStartTouch);
+  document.removeEventListener('mousemove', onDrawMove);
+  document.removeEventListener('mouseup', onDrawEnd);
+  document.removeEventListener('touchmove', onDrawMoveTouch);
+  document.removeEventListener('touchend', onDrawEndTouch);
+  // Restore Leaflet
+  map.dragging.enable();
+  map.scrollWheelZoom.enable();
+  map.doubleClickZoom.enable();
+  map.boxZoom.enable();
+  document.getElementById('draw-coords').style.display = 'none';
+}
+
+function getMapAreaOffset() {
+  return document.getElementById('map-area').getBoundingClientRect();
+}
+
+function pxToLatLng(clientX, clientY) {
+  const rect = getMapAreaOffset();
+  const point = L.point(clientX - rect.left, clientY - rect.top);
+  return map.containerPointToLatLng(point);
+}
+
+function onDrawStart(e) {
+  if (e.button !== 0) return;
+  drawState.dragging = true;
+  drawState.startPx = { x: e.clientX, y: e.clientY };
+  drawState.startLatLng = pxToLatLng(e.clientX, e.clientY);
+  document.getElementById('draw-overlay').classList.add('hidden');
+  document.getElementById('draw-selection').style.display = 'block';
+  document.getElementById('draw-coords').style.display = 'block';
+  document.addEventListener('mousemove', onDrawMove);
+  document.addEventListener('mouseup', onDrawEnd);
+  e.preventDefault();
+}
+
+function onDrawStartTouch(e) {
+  const touch = e.touches[0];
+  drawState.dragging = true;
+  drawState.startPx = { x: touch.clientX, y: touch.clientY };
+  drawState.startLatLng = pxToLatLng(touch.clientX, touch.clientY);
+  document.getElementById('draw-overlay').classList.add('hidden');
+  document.getElementById('draw-selection').style.display = 'block';
+  document.getElementById('draw-coords').style.display = 'block';
+  document.addEventListener('touchmove', onDrawMoveTouch, {passive: false});
+  document.addEventListener('touchend', onDrawEndTouch);
+  e.preventDefault();
+}
+
+function updateSelectionRect(curX, curY) {
+  const rect = getMapAreaOffset();
+  const sel = document.getElementById('draw-selection');
+  const x1 = Math.min(drawState.startPx.x, curX) - rect.left;
+  const y1 = Math.min(drawState.startPx.y, curY) - rect.top;
+  const x2 = Math.max(drawState.startPx.x, curX) - rect.left;
+  const y2 = Math.max(drawState.startPx.y, curY) - rect.top;
+  sel.style.left   = x1 + 'px';
+  sel.style.top    = y1 + 'px';
+  sel.style.width  = (x2 - x1) + 'px';
+  sel.style.height = (y2 - y1) + 'px';
+
+  // Live coordinate readout
+  const llStart = drawState.startLatLng;
+  const llEnd = pxToLatLng(curX, curY);
+  const s = Math.min(llStart.lat, llEnd.lat).toFixed(4);
+  const n = Math.max(llStart.lat, llEnd.lat).toFixed(4);
+  const w = Math.min(llStart.lng, llEnd.lng).toFixed(4);
+  const e = Math.max(llStart.lng, llEnd.lng).toFixed(4);
+  document.getElementById('draw-coords').textContent =
+    `${s}, ${w}  →  ${n}, ${e}`;
+}
+
+function onDrawMove(e) {
+  if (!drawState.dragging) return;
+  updateSelectionRect(e.clientX, e.clientY);
+}
+
+function onDrawMoveTouch(e) {
+  if (!drawState.dragging) return;
+  updateSelectionRect(e.touches[0].clientX, e.touches[0].clientY);
+  e.preventDefault();
+}
+
+function finalizeDrawEnd(endX, endY) {
+  if (!drawState.dragging) return;
+  drawState.dragging = false;
+  const llStart = drawState.startLatLng;
+  const llEnd = pxToLatLng(endX, endY);
+
+  const bb = {
+    s: Math.min(llStart.lat, llEnd.lat),
+    n: Math.max(llStart.lat, llEnd.lat),
+    w: Math.min(llStart.lng, llEnd.lng),
+    e: Math.max(llStart.lng, llEnd.lng),
+  };
+
+  // Ignore tiny accidental clicks
+  if ((bb.n - bb.s) < 0.001 || (bb.e - bb.w) < 0.001) {
+    document.getElementById('draw-selection').style.display = 'none';
+    document.getElementById('draw-overlay').classList.remove('hidden');
+    return;
+  }
+
+  document.getElementById('draw-selection').style.display = 'none';
+  exitDrawMode();
+  setBbox(bb);
+  setStatus('BBOX SET', 'var(--teal)');
+}
+
+function onDrawEnd(e) {
+  finalizeDrawEnd(e.clientX, e.clientY);
+  document.removeEventListener('mousemove', onDrawMove);
+  document.removeEventListener('mouseup', onDrawEnd);
+}
+
+function onDrawEndTouch(e) {
+  const t = e.changedTouches[0];
+  finalizeDrawEnd(t.clientX, t.clientY);
+  document.removeEventListener('touchmove', onDrawMoveTouch);
+  document.removeEventListener('touchend', onDrawEndTouch);
+}
+
+function updateMapInfo() {
+  if (!currentBbox) return;
+  document.getElementById('map-info').style.display = 'block';
+  const b = currentBbox;
+  document.getElementById('mi-bbox').textContent =
+    `${b.s.toFixed(3)},${b.w.toFixed(3)} → ${b.n.toFixed(3)},${b.e.toFixed(3)}`;
+  document.getElementById('mi-stations').textContent = stations.length;
+  document.getElementById('mi-tracts').textContent = tracts.length;
+  const totalEVs = tracts.reduce((a,t) => a + (t.evCount || 0), 0);
+  document.getElementById('mi-evs').textContent = Math.round(totalEVs).toLocaleString();
+}
+
+// ============================================================
+// LOGGING
+// ============================================================
+function log(msg, type='') {
+  const el = document.getElementById('progress-log');
+  el.style.display = 'block';
+  const line = document.createElement('div');
+  line.className = type ? 'log-' + type : '';
+  line.textContent = '▸ ' + msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearLog() {
+  const el = document.getElementById('progress-log');
+  el.innerHTML = '';
+  el.style.display = 'none';
+}
+
+function setStatus(text, color) {
+  const b = document.getElementById('status-badge');
+  b.textContent = text;
+  b.style.color = color || 'var(--teal)';
+  b.style.borderColor = color || 'var(--teal)';
+}
+
+// ============================================================
+// SIDEBAR TABS
+// ============================================================
+function showSTab(name) {
+  ['load','config','results','data'].forEach(t => {
+    document.getElementById('stab-' + t).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.stab').forEach((el, i) => {
+    const tabs = ['load','config','results','data'];
+    el.classList.toggle('active', tabs[i] === name);
+  });
+}
+
+// ============================================================
+// GEOCODE
+// ============================================================
+async function geocodePlace() {
+  const q = document.getElementById('place-search').value.trim();
+  if (!q) return;
+  clearLog();
+  log('Geocoding: ' + q);
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`;
+    const res = await fetch(url, {headers: {'User-Agent': 'EVQUARIUM-Tool/1.0'}});
+    const data = await res.json();
+    if (!data.length) { log('No results found.', 'error'); return; }
+    const r = data[0];
+    const bb = r.boundingbox; // [minlat, maxlat, minlon, maxlon]
+    setBbox({s: parseFloat(bb[0]), n: parseFloat(bb[1]), w: parseFloat(bb[2]), e: parseFloat(bb[3])});
+    log(`Found: ${r.display_name}`);
+    log(`Bbox: ${parseFloat(bb[0]).toFixed(4)}, ${parseFloat(bb[2]).toFixed(4)} → ${parseFloat(bb[1]).toFixed(4)}, ${parseFloat(bb[3]).toFixed(4)}`);
+  } catch(e) {
+    log('Geocode failed: ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+// MANUAL BBOX
+// ============================================================
+function applyManualBbox() {
+  const s = parseFloat(document.getElementById('bb-s').value);
+  const w = parseFloat(document.getElementById('bb-w').value);
+  const n = parseFloat(document.getElementById('bb-n').value);
+  const e = parseFloat(document.getElementById('bb-e').value);
+  if ([s,w,n,e].some(isNaN)) { alert('Fill all bbox fields.'); return; }
+  setBbox({s,w,n,e});
+}
+
+function setBbox(bb) {
+  currentBbox = bb;
+  // Update manual fields
+  document.getElementById('bb-s').value = bb.s.toFixed(5);
+  document.getElementById('bb-w').value = bb.w.toFixed(5);
+  document.getElementById('bb-n').value = bb.n.toFixed(5);
+  document.getElementById('bb-e').value = bb.e.toFixed(5);
+  // Draw on map
+  if (bboxRect) map.removeLayer(bboxRect);
+  bboxRect = L.rectangle([[bb.s, bb.w],[bb.n, bb.e]], {
+    color: '#00ddb4', weight: 2, fillOpacity: 0.06, dashArray: '6,4'
+  }).addTo(map);
+  map.fitBounds([[bb.s, bb.w],[bb.n, bb.e]], {padding: [40, 40]});
+  // Update map info overlay
+  document.getElementById('map-info').style.display = 'block';
+  document.getElementById('mi-bbox').textContent =
+    `${bb.s.toFixed(3)},${bb.w.toFixed(3)} → ${bb.n.toFixed(3)},${bb.e.toFixed(3)}`;
+  // Update sidebar bbox readout
+  const latSpan = (bb.n - bb.s) * 111;
+  const lonSpan = (bb.e - bb.w) * 111 * Math.cos(((bb.n+bb.s)/2) * Math.PI/180);
+  document.getElementById('bbox-readout').style.display = 'block';
+  document.getElementById('bbox-readout-text').innerHTML =
+    `N ${bb.n.toFixed(5)}<br>S ${bb.s.toFixed(5)}<br>W ${bb.w.toFixed(5)}<br>E ${bb.e.toFixed(5)}<br>` +
+    `<span style="color:var(--teal);margin-top:2px;display:block">~${latSpan.toFixed(1)} × ${lonSpan.toFixed(1)} km</span>`;
+  // Highlight the draw button as "done"
+  const btn = document.getElementById('draw-btn');
+  btn.textContent = '✓ Area Selected';
+  btn.style.background = 'rgba(0,221,180,0.15)';
+  btn.style.color = 'var(--teal)';
+  btn.style.border = '1px solid var(--teal)';
+}
+
+// ============================================================
+// OSM FILE PARSING
+// ============================================================
+function handleOsmDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handleOsmFile(file);
+}
+
+async function handleOsmFile(file) {
+  if (!file) return;
+  document.getElementById('osm-file-name').textContent = file.name;
+  clearLog();
+  log('Parsing OSM file: ' + file.name);
+  const text = await file.text();
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, 'text/xml');
+
+  // Extract bounds
+  const boundsEl = xml.querySelector('bounds');
+  if (boundsEl) {
+    const bb = {
+      s: parseFloat(boundsEl.getAttribute('minlat')),
+      w: parseFloat(boundsEl.getAttribute('minlon')),
+      n: parseFloat(boundsEl.getAttribute('maxlat')),
+      e: parseFloat(boundsEl.getAttribute('maxlon'))
+    };
+    setBbox(bb);
+    log(`Extracted bbox from OSM: ${bb.s.toFixed(4)}, ${bb.w.toFixed(4)} → ${bb.n.toFixed(4)}, ${bb.e.toFixed(4)}`);
+  } else {
+    log('No <bounds> element found — bbox may be inaccurate', 'warn');
+  }
+
+  // Extract charging stations from OSM XML
+  const nodeMap = {};
+  xml.querySelectorAll('node').forEach(n => {
+    nodeMap[n.getAttribute('id')] = {
+      lat: parseFloat(n.getAttribute('lat')),
+      lon: parseFloat(n.getAttribute('lon')),
+      tags: {}
+    };
+    n.querySelectorAll('tag').forEach(t => {
+      nodeMap[n.getAttribute('id')].tags[t.getAttribute('k')] = t.getAttribute('v');
+    });
+  });
+
+  // Find charging stations
+  const osmStations = [];
+  Object.values(nodeMap).forEach(n => {
+    if (n.tags.amenity === 'charging_station') {
+      osmStations.push({
+        lat: n.lat, lon: n.lon,
+        name: n.tags.name || n.tags.brand || n.tags.operator || 'Charging Station',
+        capacity: parseInt(n.tags.capacity) || parseInt(n.tags['socket:type2']) || null,
+        operator: n.tags.operator || n.tags.brand || '',
+        source: 'osm-file'
+      });
+    }
+  });
+
+  if (osmStations.length > 0) {
+    stations = osmStations;
+    log(`Found ${stations.length} charging stations in OSM file`);
+    renderStations();
+  } else {
+    log('No charging stations in file — will query Overpass on fetch', 'warn');
+  }
+}
+
+// ============================================================
+// FETCH ALL DATA
+// ============================================================
+// DATA LOADING — PROMPT GENERATION & PASTE
+// The artifact sandbox blocks all outbound fetch() calls.
+// Instead: generate a prompt, user sends it to Claude,
+// Claude fetches + returns JSON, user pastes it back here.
+// ============================================================
+
+function generateDataPrompt() {
+  if (!currentBbox) {
+    alert('Draw a bounding box on the map first (Step 1).');
+    return;
+  }
+  const {s, w, n, e} = currentBbox;
+  const ocmKey = (document.getElementById('ocm-api-key')?.value?.trim()) || '';
+  const keyParam = ocmKey ? `&key=${ocmKey}` : '';
+  const prompt = `Please fetch EV charging station and census data for this bounding box and return it as a single JSON object.
+
+Bounding box: south=${s.toFixed(5)}, west=${w.toFixed(5)}, north=${n.toFixed(5)}, east=${e.toFixed(5)}
+
+Do the following steps:
+
+1. Fetch EV charging stations from Open Charge Map API:
+   URL: https://api.openchargemap.io/v3/poi/?output=json&boundingbox=(${s.toFixed(5)},${w.toFixed(5)}),(${n.toFixed(5)},${e.toFixed(5)})&maxresults=500&compact=true&verbose=false&statustypeid=50${keyParam}
+   Extract from each result: ID, AddressInfo.Title, AddressInfo.Latitude, AddressInfo.Longitude, AddressInfo.AddressLine1, AddressInfo.Town, AddressInfo.StateOrProvince, OperatorInfo.Title, Connections array (each: Level.ID, Quantity), UsageType.IsMembershipRequired
+
+2. Fetch census tract boundaries from TIGERweb:
+   URL: https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/8/query?geometry=${w.toFixed(5)},${s.toFixed(5)},${e.toFixed(5)},${n.toFixed(5)}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=GEOID,NAME,STATE,COUNTY,TRACT&returnGeometry=true&f=geojson&outSR=4326
+   Extract each feature's GEOID, NAME, STATE, COUNTY, TRACT, and geometry coordinates.
+
+3. For each unique STATE+COUNTY combination found in step 2, fetch ACS vehicle data:
+   URL: https://api.census.gov/data/2022/acs/acs5?get=B08201_001E,B08201_002E,B01003_001E&for=tract:*&in=state:[STATE]%20county:[COUNTY]
+   Match back to tracts by TRACT field.
+
+Return ONLY this JSON structure with no explanation or markdown:
+{
+  "stations": [ { "id": number, "name": string, "lat": number, "lon": number, "address": string, "network": string, "access": "public"|"private", "l1": number, "l2": number, "dcfc": number } ],
+  "tracts": [ { "geoid": string, "name": string, "state": string, "county": string, "tract": string, "lat": number, "lon": number, "totalVehicles": number, "population": number, "geometry": <geojson geometry object> } ]
+}`;
+
+  const box = document.getElementById('prompt-display');
+  const copyBtn = document.getElementById('copy-prompt-btn');
+  box.textContent = prompt;
+  box.style.display = 'block';
+  copyBtn.style.display = 'block';
+  // Store for copy
+  box.dataset.prompt = prompt;
+  log('Prompt generated — copy it and send to Claude in a new message', '');
+  setStatus('PROMPT READY', 'var(--amber)');
+}
+
+function copyGeneratedPrompt() {
+  const prompt = document.getElementById('prompt-display').dataset.prompt;
+  if (!prompt) return;
+  navigator.clipboard.writeText(prompt).then(() => {
+    const btn = document.getElementById('copy-prompt-btn');
+    btn.textContent = '✓ COPIED!';
+    btn.style.background = 'var(--teal)';
+    setTimeout(() => {
+      btn.textContent = '📋 COPY PROMPT';
+    }, 2000);
+  }).catch(() => {
+    // Fallback: select text
+    const box = document.getElementById('prompt-display');
+    const range = document.createRange();
+    range.selectNodeContents(box);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+  });
+}
+
+function loadPastedData() {
+  const raw = document.getElementById('data-json-paste').value.trim();
+  if (!raw) { alert('Paste Claude\'s JSON response first.'); return; }
+
+  let data;
+  try {
+    // Strip markdown fences if present
+    const cleaned = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+    data = JSON.parse(cleaned);
+  } catch(e) {
+    log('JSON parse error: ' + e.message + ' — make sure you pasted the full response', 'error');
+    return;
+  }
+
+  clearLog();
+  log('Parsing pasted data…');
+
+  // ── Stations ──────────────────────────────────────────────
+  const defaultChargers = parseInt(document.getElementById('default-chargers').value) || 2;
+  const defaultServiceTime = parseFloat(document.getElementById('default-service').value) || 1.0;
+  const rawStations = data.stations || data.fuel_stations || [];
+
+  stations = rawStations.map(st => {
+    const l1   = parseInt(st.l1)   || 0;
+    const l2   = parseInt(st.l2)   || 0;
+    const dcfc = parseInt(st.dcfc) || 0;
+    const totalPorts = l1 + l2 + dcfc;
+    const chargers = totalPorts || defaultChargers;
+    let serviceTime = defaultServiceTime;
+    if (totalPorts > 0) {
+      serviceTime = Math.round(((l1*8 + l2*1.5 + dcfc*0.5) / totalPorts) * 10) / 10;
+    }
+    return {
+      id: st.id, lat: st.lat, lon: st.lon,
+      name: st.name || `Station #${st.id}`,
+      chargers, serviceTime,
+      network: st.network || '', operator: st.network || '',
+      address: st.address || '',
+      access: st.access || 'public',
+      l1, l2, dcfc, source: 'pasted'
+    };
+  }).filter(s => s.lat && s.lon);
+
+  log(`Stations: ${stations.length} loaded`);
+
+  // ── Tracts ────────────────────────────────────────────────
+  const rawTracts = data.tracts || [];
+  tracts = rawTracts.map(t => {
+    // Compute centroid if not already computed
+    let lat = t.lat, lon = t.lon;
+    if ((!lat || !lon) && t.geometry) {
+      const coords = t.geometry.coordinates;
+      const rings = t.geometry.type === 'Polygon' ? [coords[0]] :
+                    t.geometry.type === 'MultiPolygon' ? coords.map(c => c[0]) : [];
+      let count = 0;
+      lat = 0; lon = 0;
+      rings.forEach(ring => ring.forEach(pt => { lon += pt[0]; lat += pt[1]; count++; }));
+      if (count > 0) { lat /= count; lon /= count; }
+    }
+    return {
+      geoid: t.geoid, name: t.name,
+      state: t.state, county: t.county, tract: t.tract,
+      lat, lon, geometry: t.geometry || null,
+      totalVehicles: parseInt(t.totalVehicles) || 0,
+      population: parseInt(t.population) || 0,
+      evDemand: 0
+    };
+  }).filter(t => t.lat && t.lon);
+
+  log(`Tracts: ${tracts.length} loaded`);
+
+  if (stations.length === 0) {
+    log('No stations found in pasted data — adding synthetic demo', 'warn');
+    addSyntheticStations();
+  }
+  if (tracts.length === 0) {
+    log('No tracts found — using synthetic grid', 'warn');
+    addSyntheticTracts();
+  }
+
+  computeEvDemand();
+  renderAll();
+  document.getElementById('solve-btn').disabled = false;
+  setStatus('DATA READY', 'var(--teal)');
+  log(`✓ Ready — ${stations.length} stations, ${tracts.length} tracts`);
+  updateDataTab();
+  updateMapInfo();
+  showSTab('config');
+  setTimeout(updateDemandPreview, 50); // render after tab switch
+}
+
+// Legacy fetchAllData — now just validates bbox and prompts user
+async function fetchAllData() {
+  if (!currentBbox) {
+    alert('Draw a bounding box first.');
+    return;
+  }
+  if (stations.length === 0 && tracts.length === 0) {
+    alert('Use Step 2 above: generate the prompt, send it to Claude, then paste the response back.');
+    return;
+  }
+  // If data already loaded, just re-run
+  computeEvDemand();
+  renderAll();
+  document.getElementById('solve-btn').disabled = false;
+  setStatus('DATA READY', 'var(--teal)');
+  updateDataTab();
+  updateMapInfo();
+  showSTab('config');
+}
+
+function addSyntheticStations() {
+  const {s,w,n,e} = currentBbox;
+  const cx=(s+n)/2, cy=(w+e)/2, spread=Math.min(n-s,e-w)*0.25;
+  for (let i=0;i<4;i++) {
+    const angle=(i/4)*Math.PI*2;
+    stations.push({
+      lat:cx+Math.cos(angle)*spread*0.6, lon:cy+Math.sin(angle)*spread,
+      id:'syn-'+i, name:`Demo Station ${i+1}`,
+      chargers:2+i, serviceTime:1.0,
+      operator:'Demo', network:'', address:'', access:'public',
+      l1:0, l2:2+i, dcfc:0, source:'synthetic'
+    });
+  }
+}
+
+function addSyntheticTracts() {
+  const {s,w,n,e}=currentBbox, rows=3, cols=3;
+  const dlat=(n-s)/rows, dlon=(e-w)/cols;
+  let i=0;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+    tracts.push({
+      geoid:`SYNTH${i}`, name:`Zone ${i+1}`,
+      state:'00', county:'000', tract:String(i).padStart(6,'0'),
+      lat:s+dlat*(r+0.5), lon:w+dlon*(c+0.5), geometry:null,
+      totalVehicles:Math.round(500+Math.random()*1500),
+      evDemand:0, population:0
+    });
+    i++;
+  }
+}
+
+function getArrivalRate() {
+  // Returns arrivals per analysis period per EV
+  const visitsPerWeek = parseFloat(document.getElementById('visits-per-week').value) || 1.0;
+  const period = document.getElementById('time-period').value;
+  if (period === 'weekly')   return visitsPerWeek;           // per week
+  if (period === 'daily')    return visitsPerWeek / 7;       // per day
+  if (period === 'peakhour') return visitsPerWeek / 7 / 10;  // per peak hour (assume 10% daily load in peak)
+  return visitsPerWeek / 7;
+}
+
+function getPeriodLabel() {
+  const period = document.getElementById('time-period').value;
+  if (period === 'weekly')   return 'week';
+  if (period === 'daily')    return 'day';
+  if (period === 'peakhour') return 'peak hr';
+  return 'day';
+}
+
+function computeEvDemand() {
+  const adoptionRate = parseFloat(document.getElementById('ev-rate').value)/100 || 0.05;
+  const arrivalRate  = getArrivalRate();
+  tracts.forEach(t => {
+    const vehicles = t.totalVehicles || Math.round((t.population||1000)*0.45);
+    const evCount  = vehicles * adoptionRate;
+    t.evCount  = evCount;
+    t.evDemand = evCount * arrivalRate; // arrivals per period
+  });
+}
+
+function updateDemandPreview() {
+  const el = document.getElementById('demand-preview');
+  if (!el) return;
+  const adoptionRate = parseFloat(document.getElementById('ev-rate').value)/100 || 0.05;
+  const arrivalRate  = getArrivalRate();
+  const label        = getPeriodLabel();
+  const totalVeh     = tracts.reduce((a,t) => a + (t.totalVehicles||0), 0);
+  const totalEVs     = Math.round(totalVeh * adoptionRate);
+  const totalArrivals = (totalEVs * arrivalRate).toFixed(1);
+  const visitsPerWeek = parseFloat(document.getElementById('visits-per-week').value) || 1.0;
+  el.innerHTML =
+    `<span style="color:var(--teal)">${totalEVs.toLocaleString()}</span> EVs in area ` +
+    `(${(adoptionRate*100).toFixed(1)}% of ${totalVeh.toLocaleString()} vehicles)<br>` +
+    `Each visits public charger <span style="color:var(--teal)">${visitsPerWeek}×/week</span><br>` +
+    `→ <span style="color:var(--amber)">${totalArrivals}</span> arrivals / ${label} across all zones`;
+}
+
+// ============================================================
+function renderAll() {
+  renderTracts();
+  renderStations();
+  renderCentroids();
+}
+
+function renderTracts() {
+  if (tractLayer) map.removeLayer(tractLayer);
+  const features = tracts
+    .filter(t => t.geometry)
+    .map(t => ({ type: 'Feature', geometry: t.geometry, properties: t }));
+  if (!features.length) return;
+
+  tractLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+    style: f => {
+      const t = f.properties;
+      const v = t.totalVehicles;
+      const maxV = Math.max(...tracts.map(t=>t.totalVehicles), 1);
+      const intensity = v / maxV;
+      return {
+        fillColor: `rgba(91,164,255,${0.08 + intensity * 0.3})`,
+        color: '#5ba4ff',
+        weight: 0.7,
+        fillOpacity: 1
+      };
+    },
+    onEachFeature: (f, layer) => {
+      const t = f.properties;
+      layer.bindTooltip(`
+        <b style="font-family:'Space Mono',monospace">${t.name || t.geoid}</b><br>
+        <span style="font-size:10px">Vehicles: ${t.totalVehicles.toLocaleString()}</span><br>
+        <span style="font-size:10px">EV Demand: ${t.evDemand.toFixed(2)} trips/day</span>
+      `, { className: 'leaflet-tooltip-dark' });
+    }
+  }).addTo(map);
+}
+
+function renderStations() {
+  if (stationLayer) map.removeLayer(stationLayer);
+  stationLayer = L.layerGroup();
+
+  stations.forEach(s => {
+    const rho = lastResults ? (lastResults.stationUtil[stations.indexOf(s)] || 0) : 0;
+    // Color: red=overloaded, amber=high util, purple=DCFC, teal=L2
+    const color = rho > 0.8 ? '#ff5577'
+                : rho > 0.6 ? '#ffb347'
+                : (s.dcfc > 0) ? '#a78bfa'
+                : '#00ddb4';
+    // Size by total charger count
+    const r = 5 + Math.min(s.chargers, 12) * 1.2;
+
+    const circle = L.circleMarker([s.lat, s.lon], {
+      radius: r, fillColor: color, color: '#000', weight: 1.5,
+      fillOpacity: 0.9
+    });
+
+    circle.bindTooltip(`
+      <b style="font-family:'Space Mono',monospace">${s.name}</b><br>
+      <span style="font-size:10px">${s.address || ''}</span><br>
+      <span style="font-size:10px">
+        ${s.l2 > 0 ? `L2: ${s.l2}  ` : ''}${s.dcfc > 0 ? `DCFC: ${s.dcfc}  ` : ''}${s.l1 > 0 ? `L1: ${s.l1}` : ''}
+        ${(!s.l1 && !s.l2 && !s.dcfc) ? `Chargers: ${s.chargers}` : ''}
+      </span><br>
+      ${s.network ? `<span style="font-size:10px;color:#a78bfa">⚡ ${s.network}</span><br>` : ''}
+      ${s.access === 'private' ? `<span style="font-size:10px;color:var(--amber)">🔒 Private</span><br>` : ''}
+      ${rho > 0 ? `<span style="font-size:10px;color:${color}">Utilization: ${(rho*100).toFixed(1)}%  Queue: ${lastResults.stationDelay[stations.indexOf(s)] > 999 ? '∞' : lastResults.stationDelay[stations.indexOf(s)].toFixed(1)} min</span>` : ''}
+    `);
+    stationLayer.addLayer(circle);
+  });
+
+  stationLayer.addTo(map);
+}
+
+function renderCentroids() {
+  if (centroidLayer) map.removeLayer(centroidLayer);
+  centroidLayer = L.layerGroup();
+
+  const maxDemand = Math.max(...tracts.map(t => t.evDemand), 0.001);
+  tracts.forEach(t => {
+    if (!t.lat || !t.lon) return;
+    const r = 3 + (t.evDemand / maxDemand) * 8;
+    const marker = L.circleMarker([t.lat, t.lon], {
+      radius: r, fillColor: '#ffb347', color: '#000', weight: 0.8,
+      fillOpacity: 0.75
+    });
+    marker.bindTooltip(`
+      <b style="font-family:'Space Mono',monospace">Tract ${t.name || t.geoid}</b><br>
+      <span style="font-size:10px">EVs demand: ${t.evDemand.toFixed(3)} trips/day</span><br>
+      <span style="font-size:10px">Vehicles: ${t.totalVehicles.toLocaleString()}</span>
+    `);
+    centroidLayer.addLayer(marker);
+  });
+
+  centroidLayer.addTo(map);
+}
+
+function renderFlowLines(flow) {
+  if (flowLayer) map.removeLayer(flowLayer);
+  if (!document.getElementById('show-flows').checked) return;
+
+  flowLayer = L.layerGroup();
+  const thresh = parseFloat(document.getElementById('flow-thresh').value) || 0.005;
+  const maxFlow = Math.max(...flow.flat(), 0.001);
+
+  tracts.forEach((t, i) => {
+    stations.forEach((s, j) => {
+      const f = flow[i][j];
+      if (!f || f < thresh) return;
+      const alpha = 0.1 + (f / maxFlow) * 0.5;
+      const w = 0.5 + (f / maxFlow) * 4;
+      const rho = lastResults.stationUtil[j];
+      const color = rho > 0.8 ? '#ff5577' : rho > 0.6 ? '#ffb347' : '#00ddb4';
+
+      const line = L.polyline([[t.lat, t.lon],[s.lat, s.lon]], {
+        color, weight: w, opacity: alpha
+      });
+      flowLayer.addLayer(line);
+    });
+  });
+
+  flowLayer.addTo(map);
+}
+
+// ============================================================
+// SOLVER
+// ============================================================
+function mdcDelay(lambda, c, mu) {
+  const rho = lambda / (c * mu);
+  if (rho >= 0.9999) return 9999;
+  const Wq = Math.pow(rho, Math.sqrt(2*(c+1))) / (c * mu * (1 - rho)) * 0.5;
+  return Wq * 60; // minutes
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// Travel time in minutes (urban speed configurable in UI)
+function travelTimeMin(t, s, speedKmh) {
+  const km = haversineKm(t.lat, t.lon, s.lat, s.lon);
+  return (km / (speedKmh || 20)) * 60;
+}
+
+function solveModel() {
+  if (tracts.length === 0 || stations.length === 0) {
+    alert('No data loaded. Fetch data first.');
+    return;
+  }
+
+  // Recompute EV demand with current settings
+  computeEvDemand();
+
+  const maxIter = parseInt(document.getElementById('max-iter').value);
+  const epsilon = parseFloat(document.getElementById('epsilon').value);
+  const vot = parseFloat(document.getElementById('vot').value) / 60; // $/min
+
+  const btn = document.getElementById('solve-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>SOLVING…';
+  setStatus('SOLVING', 'var(--amber)');
+
+  setTimeout(() => {
+    const nZ = tracts.length, nS = stations.length;
+
+    // Per-station service times based on charger mix
+    stations.forEach(s => {
+      const l1 = s.l1 || 0, l2 = s.l2 || 0, dcfc = s.dcfc || 0;
+      const total = l1 + l2 + dcfc;
+      const svcL1   = parseFloat(document.getElementById('svc-l1').value)   || 8.0;
+      const svcL2   = parseFloat(document.getElementById('svc-l2').value)   || 1.5;
+      const svcDCFC = parseFloat(document.getElementById('svc-dcfc').value) || 0.5;
+      const svcFb   = parseFloat(document.getElementById('default-service').value) || 1.0;
+      if (total > 0) {
+        s.serviceTime = (l1*svcL1 + l2*svcL2 + dcfc*svcDCFC) / total;
+      } else {
+        s.serviceTime = svcFb;
+      }
+      if (!s.chargers || s.chargers < 1) s.chargers = parseInt(document.getElementById('default-chargers').value) || 2;
+    });
+
+    // Pre-compute travel times using configurable urban speed
+    const urbanSpeedKmh = parseFloat(document.getElementById('urban-speed').value) || 20;
+    const tt = tracts.map(t => stations.map(s => {
+      const km = haversineKm(t.lat, t.lon, s.lat, s.lon);
+      return (km / urbanSpeedKmh) * 60; // minutes
+    }));
+
+    // Initialize flow
+    let flow = tracts.map(t => stations.map(_ => t.evDemand / nS));
+
+    const history = [];
+    let converged = false, iters = 0;
+
+    for (let iter = 0; iter < maxIter; iter++) {
+      iters = iter + 1;
+
+      // Station loads
+      const load = stations.map((_, j) => tracts.reduce((a, _, i) => a + flow[i][j], 0));
+
+      // Costs
+      const cost = tracts.map((_, i) =>
+        stations.map((s, j) => {
+          const mu = 1 / s.serviceTime;
+          const wq = mdcDelay(load[j], s.chargers, mu);
+          return tt[i][j] + vot * wq;
+        })
+      );
+
+      // AON
+      const aon = tracts.map((t, i) => {
+        const minC = Math.min(...cost[i]);
+        return stations.map((_, j) => cost[i][j] === minC ? t.evDemand : 0);
+      });
+
+      // Update
+      const step = 1 / (iter + 2);
+      let maxDelta = 0;
+      const newFlow = tracts.map((_, i) =>
+        stations.map((_, j) => {
+          const u = flow[i][j] * (1 - step) + aon[i][j] * step;
+          maxDelta = Math.max(maxDelta, Math.abs(u - flow[i][j]));
+          return u;
+        })
+      );
+      flow = newFlow;
+      history.push(maxDelta);
+      if (maxDelta < epsilon) { converged = true; break; }
+    }
+
+    // Final metrics
+    const load = stations.map((_, j) => tracts.reduce((a, _, i) => a + flow[i][j], 0));
+    const stationUtil = stations.map((s, j) => Math.min(load[j] / (s.chargers * (1/s.serviceTime)), 0.9999));
+    const stationDelay = stations.map((s, j) => mdcDelay(load[j], s.chargers, 1/s.serviceTime));
+
+    let totalW = 0, totalF = 0;
+    tracts.forEach((t, i) => stations.forEach((_, j) => {
+      const f = flow[i][j];
+      if (f > 0) { totalW += f * (tt[i][j] + stationDelay[j]); totalF += f; }
+    }));
+
+    const totalEVs = tracts.reduce((a,t) => a + (t.evCount || 0), 0);
+
+    lastResults = {
+      flow, stationUtil, stationDelay, history, iters, converged,
+      avgAccess: totalF > 0 ? totalW / totalF : 0,
+      avgDelay: stationDelay.reduce((a,b)=>a+b,0) / nS,
+      maxUtil: Math.max(...stationUtil),
+      totalTrips: tracts.reduce((a,t) => a+t.evDemand, 0),
+      periodLabel: getPeriodLabel(),
+      totalEVs
+    };
+
+    setStatus(converged ? 'CONVERGED' : 'MAX ITER', converged ? 'var(--teal)' : 'var(--amber)');
+    displayResults(lastResults);
+    renderStations(); // re-render with utilization colors
+    renderFlowLines(flow);
+    showSTab('results');
+    btn.disabled = false;
+    btn.innerHTML = '▶ Run EVQUARIUM Solver';
+  }, 50);
+}
+
+// ============================================================
+// DISPLAY RESULTS
+// ============================================================
+function displayResults(r) {
+  document.getElementById('results-empty').style.display = 'none';
+  document.getElementById('results-body').style.display = '';
+
+  document.getElementById('r-access').textContent = r.avgAccess.toFixed(1);
+  document.getElementById('r-delay').textContent = r.avgDelay.toFixed(2);
+  document.getElementById('r-util').textContent = (r.maxUtil*100).toFixed(1);
+  document.getElementById('r-trips').textContent = r.totalTrips.toFixed(1) + ' / ' + (r.periodLabel || 'period');
+  document.getElementById('r-stations').textContent = stations.length;
+  document.getElementById('r-tracts').textContent = tracts.length;
+  document.getElementById('r-iters').textContent = r.iters;
+  document.getElementById('r-ev-count').textContent = Math.round(r.totalEVs).toLocaleString();
+
+  // Utilization bars
+  const utilDiv = document.getElementById('util-bars');
+  utilDiv.innerHTML = '';
+  const sorted = stations.map((s,j)=>({s,j})).sort((a,b)=>r.stationUtil[b.j]-r.stationUtil[a.j]).slice(0,12);
+  sorted.forEach(({s,j}) => {
+    const pct = r.stationUtil[j] * 100;
+    const col = pct > 80 ? 'var(--red)' : pct > 60 ? 'var(--amber)' : 'var(--teal)';
+    utilDiv.innerHTML += `
+      <div class="bar-item">
+        <div class="bar-hdr"><span>${s.name.substring(0,22)}</span><b>${pct.toFixed(1)}%</b></div>
+        <div class="bar-bg"><div class="bar-fg" data-w="${pct}" style="background:${col}"></div></div>
+      </div>`;
+  });
+
+  // Delay bars
+  const delayDiv = document.getElementById('delay-bars');
+  delayDiv.innerHTML = '';
+  const maxD = Math.max(...r.stationDelay, 0.001);
+  sorted.forEach(({s,j}) => {
+    const d = r.stationDelay[j];
+    const pct = (d / maxD) * 100;
+    delayDiv.innerHTML += `
+      <div class="bar-item">
+        <div class="bar-hdr"><span>${s.name.substring(0,22)}</span><b>${d > 999 ? '∞' : d.toFixed(1)} min</b></div>
+        <div class="bar-bg"><div class="bar-fg" data-w="${pct}" style="background:var(--blue)"></div></div>
+      </div>`;
+  });
+
+  // Animate
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fg').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  }, 50);
+
+  // Convergence
+  drawConvergence(r.history);
+}
+
+function drawConvergence(hist) {
+  const canvas = document.getElementById('conv-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth, H = 120;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#070b12'; ctx.fillRect(0,0,W,H);
+
+  const n = hist.length;
+  if (n < 2) return;
+  const maxV = Math.max(...hist) * 1.1 || 1;
+  const PAD = {t:10,r:10,b:24,l:50};
+
+  // Grid
+  ctx.strokeStyle = 'rgba(26,38,64,0.8)'; ctx.lineWidth = 1;
+  for (let i=0;i<=3;i++) {
+    const y = PAD.t + (H-PAD.t-PAD.b)*(1-i/3);
+    ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(W-PAD.r,y); ctx.stroke();
+    ctx.fillStyle='rgba(78,106,138,0.8)'; ctx.font='9px Space Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText((maxV*i/3).toExponential(1), PAD.l-4, y+3);
+  }
+
+  // Area
+  const grad = ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(0,221,180,0.25)'); grad.addColorStop(1,'rgba(0,221,180,0)');
+  ctx.beginPath();
+  hist.forEach((v,i)=>{
+    const x=PAD.l+(i/(n-1))*(W-PAD.l-PAD.r);
+    const y=PAD.t+(H-PAD.t-PAD.b)*(1-v/maxV);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.lineTo(W-PAD.r,H-PAD.b); ctx.lineTo(PAD.l,H-PAD.b); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+
+  // Line
+  ctx.beginPath(); ctx.strokeStyle='#00ddb4'; ctx.lineWidth=1.5;
+  hist.forEach((v,i)=>{
+    const x=PAD.l+(i/(n-1))*(W-PAD.l-PAD.r);
+    const y=PAD.t+(H-PAD.t-PAD.b)*(1-v/maxV);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // X labels
+  ctx.fillStyle='rgba(78,106,138,0.8)'; ctx.font='9px Space Mono,monospace'; ctx.textAlign='center';
+  [0,Math.round(n/2),n-1].forEach(i=>{
+    const x=PAD.l+(i/Math.max(n-1,1))*(W-PAD.l-PAD.r);
+    ctx.fillText(i+1, x, H-PAD.b+14);
+  });
+  ctx.fillText('Iteration', W/2, H-4);
+}
+
+// ============================================================
+// DATA TAB
+// ============================================================
+function updateDataTab() {
+  // Tracts table
+  let html = '<div style="overflow-x:auto"><table class="mini-table"><thead><tr><th>GEOID</th><th>Name</th><th>Vehicles</th><th>EV λ</th></tr></thead><tbody>';
+  tracts.slice(0,50).forEach(t => {
+    html += `<tr><td>${t.geoid}</td><td>${t.name||'—'}</td><td>${t.totalVehicles.toLocaleString()}</td><td>${t.evDemand.toFixed(3)}</td></tr>`;
+  });
+  if (tracts.length > 50) html += `<tr><td colspan="4" style="color:var(--text-dim);text-align:center">… ${tracts.length-50} more</td></tr>`;
+  html += '</tbody></table></div>';
+  document.getElementById('tract-table-wrap').innerHTML = html;
+
+  // Stations table
+  let sHtml = '<div style="overflow-x:auto"><table class="mini-table"><thead><tr><th>Name</th><th>L2</th><th>DCFC</th><th>Network</th><th>Access</th></tr></thead><tbody>';
+  stations.slice(0,50).forEach(s => {
+    sHtml += `<tr>
+      <td title="${s.address || ''}">${s.name.substring(0,22)}</td>
+      <td>${s.l2 ?? s.chargers}</td>
+      <td>${s.dcfc ?? 0}</td>
+      <td>${(s.network || '—').substring(0,14)}</td>
+      <td style="color:${s.access==='private'?'var(--amber)':'var(--teal)'}">${s.access||'public'}</td>
+    </tr>`;
+  });
+  if (stations.length > 50) sHtml += `<tr><td colspan="4" style="color:var(--text-dim);text-align:center">… ${stations.length-50} more</td></tr>`;
+  sHtml += '</tbody></table></div>';
+  document.getElementById('station-table-wrap').innerHTML = sHtml;
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportCSV(type) {
+  let csv = '', fn = '';
+  if (type === 'zones') {
+    csv = 'geoid,name,lat,lon,totalVehicles,evDemand\n' +
+      tracts.map(t => `${t.geoid},"${t.name}",${t.lat},${t.lon},${t.totalVehicles},${t.evDemand.toFixed(4)}`).join('\n');
+    fn = 'evquarium_zones.csv';
+  } else {
+    csv = 'id,name,address,lat,lon,chargers,l2_ports,dcfc_ports,serviceTime_hrs,network,access\n' +
+      stations.map(s =>
+        `${s.id},"${s.name}","${s.address||''}",${s.lat},${s.lon},${s.chargers},${s.l2||0},${s.dcfc||0},${s.serviceTime},"${s.network||''}","${s.access||''}"`
+      ).join('\n');
+    fn = 'evquarium_stations.csv';
+  }
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = fn; a.click();
+}
+
+// ============================================================
+// LEAFLET TOOLTIP DARK STYLE
+// ============================================================
+const style = document.createElement('style');
+style.textContent = `
+  .leaflet-tooltip-dark {
+    background: rgba(7,11,18,0.95) !important;
+    border: 1px solid #1a2640 !important;
+    color: #c5d5ee !important;
+    font-family: 'Syne', sans-serif !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+  }
+  .leaflet-tooltip-dark::before { border-top-color: #1a2640 !important; }
+`;
+document.head.appendChild(style);
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  initMap();
+  // Auto-enter draw mode so the first thing users do is draw their area
+  enterDrawMode();
+});
+</script>
+</body>
+</html>
