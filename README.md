@@ -1,5 +1,13 @@
 # EVQUARIUM: An EV charging infrastructure evaluation tool
 
+--- Update 3/1/2026 ---
+
+<img width="1145" height="1020" alt="EVQUARIUM UI Albany" src="https://github.com/user-attachments/assets/dc3a57b2-79bd-409a-9d42-a2864b72c592" />
+In this update, we added a user interface "evquarium-osm.hmtl" that can be loaded in Claude to run. It loads up OSM and ssers can draw a bounding box on the map to define a study area, then load station and census data to model demand and congestion at public charging stations. The tool estimates EV demand by combining vehicle registration counts, an adjustable adoption rate, and a configurable visit frequency, then assigns demand to stations using a Method of Successive Averages (MSA) equilibrium algorithm that minimizes a generalized cost of travel time plus wait time. Station congestion is modeled using M/D/c queuing theory, where each station's service rate is a weighted average of its L1, L2, and DCFC port mix. Results are displayed as a choropleth map of demand origins, flow lines showing assignment volumes, and a ranked table of stations by utilization and expected wait time.
+
+Two screenshots are included, one showing the use of the app for a study area in Northern New Jersey, and one for a study area in Albany.
+
+
 ### 1 Introduction
 
 EVQUARIUM is an evaluation tool that quantifies the accessibility of EV charging station locations using queueing and graph theory. Given a zonal distribution of EVs with access times to charging stations, it outputs the access patterns and social impacts under equilibrium as expected wait time (queueing+charging) and utilization ratio of each charging station, and average access time (traveling+queueing) of each EV parking location. It could be used to evaluate current or designed EV charging station configurations. 
